@@ -19,13 +19,15 @@ public:
 
 	AAuraEnemy();
 	
-	/** Enemy Interface */
+	//~ Begin IEnemy Interface
 	virtual void HighlightActor() override;
 	virtual void UnHighlightActor() override;
-	/** end Enemy Interface */
+	//~ End IEnemy Interface
 
 protected:
 
+	//~ Begin ACharacter override
 	virtual void BeginPlay() override;
+	//~ End ACharacter override
 	
 };

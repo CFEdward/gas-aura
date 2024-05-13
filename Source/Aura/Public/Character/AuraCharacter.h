@@ -18,10 +18,14 @@ public:
 
 	AAuraCharacter();
 
+	//~ Begin ACharacter override
 	virtual void PossessedBy(AController* NewController) override;
-
+	//~ End ACharacter override
+	
+	//~ Begin APawn override
 	virtual void OnRep_PlayerState() override;
-
+	//~ End APawn override
+	
 private:
 
 	void InitAbilityActorInfo();

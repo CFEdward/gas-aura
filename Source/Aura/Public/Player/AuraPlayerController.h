@@ -23,27 +23,26 @@ public:
 
 	AAuraPlayerController();
 
+	//~ Begin APlayerController override
 	virtual void PlayerTick(float DeltaTime) override;
-
+	//~ End APlayerController override
+	
 protected:
 
+	//~ Begin APlayerController override
 	virtual void BeginPlay() override;
-
 	virtual void SetupInputComponent() override;
+	//~ End APlayerController override
 
 private:
 
 	UPROPERTY(EditAnywhere, Category = "Input")
 	TObjectPtr<UInputMappingContext> AuraContext;
-
 	UPROPERTY(EditAnywhere, Category = "Input")
 	TObjectPtr<UInputAction> MoveAction;
-
 	void Move(const FInputActionValue& InputActionValue);
 
 	void CursorTrace();
-
-	TObjectPtr<IEnemyInterface> LastActor;
-	
-	TObjectPtr<IEnemyInterface> ThisActor;
+	TScriptInterface<IEnemyInterface> LastActor;
+	TScriptInterface<IEnemyInterface> ThisActor;
 };

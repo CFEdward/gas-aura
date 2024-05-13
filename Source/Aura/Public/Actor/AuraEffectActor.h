@@ -18,13 +18,14 @@ public:
 	AAuraEffectActor();
 	
 protected:
-	
+
+	//~ Begin AActor override
 	virtual void BeginPlay() override;
-
-	UFUNCTION(BlueprintCallable)
-	void ApplyEffectToTarget(AActor* Target, TSubclassOf<UGameplayEffect> GameplayEffectClass);
-
-	UPROPERTY(EditAnywhere, Category = "Applied Effects")
+	//~ End AActor override
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Applied Effects")
 	TSubclassOf<UGameplayEffect> InstantGameplayEffectClass;
+	UFUNCTION(BlueprintCallable)
+	void ApplyEffectToTarget(AActor* TargetActor, const TSubclassOf<UGameplayEffect> GameplayEffectClass) const;
 
 };

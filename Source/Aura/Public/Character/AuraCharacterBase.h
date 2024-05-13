@@ -19,20 +19,22 @@ public:
 	
 	AAuraCharacterBase();
 
+	//~ Begin IAbilitySystem Interface
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
-
-	UAttributeSet* GetAttributeSet() const { return AttributeSet; }
+	//~ End IAbilitySystem Interface
+	FORCEINLINE UAttributeSet* GetAttributeSet() const { return AttributeSet; }
 
 protected:
-	
-	virtual void BeginPlay() override;
 
+	//~ Begin ACharacter override
+	virtual void BeginPlay() override;
+	//~ End ACharacter override
+	
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	TObjectPtr<USkeletalMeshComponent> Weapon;
 
 	UPROPERTY()
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
-
 	UPROPERTY()
 	TObjectPtr<UAttributeSet> AttributeSet;
 	

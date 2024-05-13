@@ -7,11 +7,11 @@
 #include "AbilitySystemComponent.h"
 #include "AuraAttributeSet.generated.h"
 
-#define ATTRIBUTE_ACCESSORS(ClassName, PropertyName) \
-	GAMEPLAYATTRIBUTE_PROPERTY_GETTER(ClassName, PropertyName) \
-	GAMEPLAYATTRIBUTE_VALUE_GETTER(PropertyName) \
-	GAMEPLAYATTRIBUTE_VALUE_SETTER(PropertyName) \
-	GAMEPLAYATTRIBUTE_VALUE_INITTER(PropertyName)
+#define ATTRIBUTE_ACCESSORS(ClassName, PropertyName)				\
+		GAMEPLAYATTRIBUTE_PROPERTY_GETTER(ClassName, PropertyName)	\
+		GAMEPLAYATTRIBUTE_VALUE_GETTER(PropertyName)				\
+		GAMEPLAYATTRIBUTE_VALUE_SETTER(PropertyName)				\
+		GAMEPLAYATTRIBUTE_VALUE_INITTER(PropertyName)
 
 /**
  * 
@@ -25,8 +25,10 @@ public:
 
 	UAuraAttributeSet();
 
+	//~ Begin UObject override
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-
+	//~ End UObject override
+	
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Health, Category = "Vital Attributes")
 	FGameplayAttributeData Health;
 	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Health);
