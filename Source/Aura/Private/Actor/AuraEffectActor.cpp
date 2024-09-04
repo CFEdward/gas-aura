@@ -13,7 +13,8 @@ AAuraEffectActor::AAuraEffectActor() :
 	InstantEffectApplicationPolicy(EEffectApplicationPolicy::DoNotApply),
 	DurationEffectApplicationPolicy(EEffectApplicationPolicy::DoNotApply),
 	InfiniteEffectApplicationPolicy(EEffectApplicationPolicy::DoNotApply),
-	InfiniteEffectRemovalPolicy(EEffectRemovalPolicy::DoNotRemove)
+	InfiniteEffectRemovalPolicy(EEffectRemovalPolicy::DoNotRemove),
+	ActorLevel(1.f)
 {
 	PrimaryActorTick.bCanEverTick = false;
 
@@ -34,7 +35,7 @@ void AAuraEffectActor::ApplyEffectToTarget(AActor* TargetActor, const TSubclassO
 	check(GameplayEffectClass);
 	FGameplayEffectContextHandle EffectContextHandle = TargetASC->MakeEffectContext();
 	EffectContextHandle.AddSourceObject(this);
-	const FGameplayEffectSpecHandle EffectSpecHandle = TargetASC->MakeOutgoingSpec(GameplayEffectClass, 1.f, EffectContextHandle);
+	const FGameplayEffectSpecHandle EffectSpecHandle = TargetASC->MakeOutgoingSpec(GameplayEffectClass, ActorLevel, EffectContextHandle);
 	const FActiveGameplayEffectHandle ActiveEffectHandle = TargetASC->ApplyGameplayEffectSpecToSelf(*EffectSpecHandle.Data);
 	
 	const bool bIsInfinite = EffectSpecHandle.Data->Def->DurationPolicy == EGameplayEffectDurationType::Infinite;

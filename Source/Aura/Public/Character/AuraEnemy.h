@@ -29,5 +29,7 @@ protected:
 	//~ Begin ACharacter override
 	virtual void BeginPlay() override;
 	//~ End ACharacter override
+
+	virtual void InitAbilityActorInfo() override;
 	
 };

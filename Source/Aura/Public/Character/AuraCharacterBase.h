@@ -29,6 +29,8 @@ protected:
 	//~ Begin ACharacter override
 	virtual void BeginPlay() override;
 	//~ End ACharacter override
+
+	virtual void InitAbilityActorInfo();
 	
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	TObjectPtr<USkeletalMeshComponent> Weapon;

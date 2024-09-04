@@ -26,8 +26,8 @@ public:
 	virtual void OnRep_PlayerState() override;
 	//~ End APawn override
 	
-private:
+protected:
 
-	void InitAbilityActorInfo();
+	virtual void InitAbilityActorInfo() override;
 	
 };
