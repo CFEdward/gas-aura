@@ -35,10 +35,8 @@ public:
 	AAuraEffectActor();
 	
 protected:
-
-	//~ Begin AActor override
+	
 	virtual void BeginPlay() override;
-	//~ End AActor override
 	
 	UFUNCTION(BlueprintCallable)
 	void ApplyEffectToTarget(AActor* TargetActor, const TSubclassOf<UGameplayEffect> GameplayEffectClass);

@@ -22,17 +22,14 @@ class AURA_API AAuraPlayerController : public APlayerController
 public:
 
 	AAuraPlayerController();
-
-	//~ Begin APlayerController override
+	
 	virtual void PlayerTick(float DeltaTime) override;
-	//~ End APlayerController override
 	
 protected:
-
-	//~ Begin APlayerController override
+	
 	virtual void BeginPlay() override;
+	
 	virtual void SetupInputComponent() override;
-	//~ End APlayerController override
 
 private:
 

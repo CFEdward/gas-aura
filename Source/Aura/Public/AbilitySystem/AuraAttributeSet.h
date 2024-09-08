@@ -52,10 +52,8 @@ class AURA_API UAuraAttributeSet : public UAttributeSet
 public:
 
 	UAuraAttributeSet();
-
-	//~ Begin UObject override
+	
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-	//~ End UObject override
 
 	virtual void PreAttributeBaseChange(const FGameplayAttribute& Attribute, float& NewValue) const override;
 	virtual void PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data) override;
