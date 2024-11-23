@@ -12,7 +12,7 @@
 #include "UI/Widget/AuraUserWidget.h"
 
 AAuraEnemy::AAuraEnemy() :
-	bHitReacting(false), BaseWalkSpeed(250.f), Level(1), CharacterClass(ECharacterClass::Warrior)
+	bHitReacting(false), BaseWalkSpeed(250.f), LifeSpan(5.f), Level(1), CharacterClass(ECharacterClass::Warrior)
 {
 	GetMesh()->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
 
@@ -99,4 +99,10 @@ void AAuraEnemy::UnHighlightActor()
 int32 AAuraEnemy::GetPlayerLevel()
 {
 	return Level;
+}
+
+void AAuraEnemy::Die()
+{
+	SetLifeSpan(LifeSpan);
+	Super::Die();
 }
