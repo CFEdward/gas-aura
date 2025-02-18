@@ -149,3 +149,13 @@ void AAuraEnemy::Die()
 	
 	Super::Die();
 }
+
+void AAuraEnemy::MulticastHandleDeath_Implementation()
+{
+	// Detach the HealthBar from the root component (capsule)
+	// NOTE: This prevents the HealthBar from falling through the ground (only on clients)
+	// "Show Collision" command shows that the capsule component doesn't fall through, so the root of the issue is still unclear
+	HealthBar->DetachFromComponent(FDetachmentTransformRules(EDetachmentRule::KeepWorld, true));
+	
+	Super::MulticastHandleDeath_Implementation();
+}

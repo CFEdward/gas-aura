@@ -38,6 +38,8 @@ public:
 	virtual void Die() override;
 	/** end Combat Interface */
 	
+	virtual void MulticastHandleDeath_Implementation() override;
+	
 	void HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
 	UPROPERTY(BlueprintReadOnly, Category = "Combat")
 	bool bHitReacting;
