@@ -132,6 +132,11 @@ int32 AAuraCharacterBase::GetMinionCount_Implementation()
 	return MinionCount;
 }
 
+void AAuraCharacterBase::ChangeMinionCountBy_Implementation(const int32 Amount)
+{
+	MinionCount += Amount;
+}
+
 void AAuraCharacterBase::Dissolve()
 {
 	if (IsValid(DissolveMaterialInstance))
