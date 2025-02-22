@@ -9,10 +9,14 @@
 #include "NavigationPath.h"
 #include "NavigationSystem.h"
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
+#include "Camera/CameraComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "Components/SplineComponent.h"
 #include "GameFramework/Character.h"
+#include "GameFramework/SpringArmComponent.h"
 #include "Input/AuraInputComponent.h"
 #include "Interaction/EnemyInterface.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "UI/Widget/DamageTextComponent.h"
 
 AAuraPlayerController::AAuraPlayerController() :
@@ -42,6 +46,13 @@ void AAuraPlayerController::BeginPlay()
 	InputModeData.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
 	InputModeData.SetHideCursorDuringCapture(false);
 	SetInputMode(InputModeData);
+
+	if (IsValid(GetPawn()))
+	{
+		ActiveSpringArm = Cast<USpringArmComponent>(GetPawn()->GetComponentByClass(USpringArmComponent::StaticClass()));
+		ActiveCamera = Cast<UCameraComponent>(GetPawn()->GetComponentByClass(UCameraComponent::StaticClass()));
+		ActiveCapsuleComponent = Cast<UCapsuleComponent>(GetPawn()->GetComponentByClass(UCapsuleComponent::StaticClass()));
+	}
 }
 
 void AAuraPlayerController::PlayerTick(float DeltaTime)
@@ -203,4 +214,162 @@ void AAuraPlayerController::CursorTrace()
 		if (LastActor) LastActor->UnHighlightActor();
 		if (ThisActor) ThisActor->HighlightActor();
 	}
+}
+
+void AAuraPlayerController::SyncOccludedActors()
+{
+	if (!ShouldCheckCameraOcclusion()) return;
+
+	// Camera is currently colliding, show all current occluded actors
+	// and do not perform further occlusion
+	if (ActiveSpringArm->bDoCollisionTest)
+	{
+		ForceShowOccludedActors();
+		return;
+	}
+
+	const FVector Start = ActiveCamera->GetComponentLocation();
+	const FVector End = GetPawn()->GetActorLocation();
+
+	TArray<TEnumAsByte<EObjectTypeQuery>> CollisionObjectTypes;
+	CollisionObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_WorldStatic));
+
+	TArray<AActor*> ActorsToIgnore;	// TODO: Add configuration to ignore actor types
+	TArray<FHitResult> OutHits;
+
+	const auto ShouldDebug = bDebugLineTraces ? EDrawDebugTrace::ForDuration : EDrawDebugTrace::None;
+
+	const bool bGotHits = UKismetSystemLibrary::CapsuleTraceMultiForObjects(
+		GetWorld(),
+		Start,
+		End,
+		ActiveCapsuleComponent->GetScaledCapsuleRadius() * CapsulePercentageForTrace,
+		ActiveCapsuleComponent->GetScaledCapsuleHalfHeight() * CapsulePercentageForTrace,
+		CollisionObjectTypes,
+		true,
+		ActorsToIgnore,
+		ShouldDebug,
+		OutHits,
+		true
+	);
+
+	if (bGotHits)
+	{
+		// The list of actors hit by the line trace, that means that they are occluded from view
+		TSet<const AActor*> ActorsJustOccluded;
+
+		// Hide actors that are occluded by the camera
+		for (FHitResult Hit : OutHits)
+		{
+			AActor* HitActor = Cast<AActor>(Hit.GetActor());
+			HideOccludedActor(HitActor);
+			ActorsJustOccluded.Add(HitActor);
+		}
+
+		// Show actors that are currently hidden but that are not occluded by the camera anymore
+		for (auto& Elem : OccludedActors)
+		{
+			if (!ActorsJustOccluded.Contains(Elem.Value.Actor) && Elem.Value.bIsOccluded)
+			{
+				ShowOccludedActor(Elem.Value);
+
+				if (bDebugLineTraces)
+					UE_LOG(LogTemp, Warning, TEXT("Actor %s was occluded, but it's not occluded anymore with the new hits."), *Elem.Value.Actor->GetName());
+			}
+		}
+	}
+	else
+	{
+		ForceShowOccludedActors();
+	}
+}
+
+bool AAuraPlayerController::HideOccludedActor(AActor* Actor)
+{
+	FCameraOccludedActor* ExistingOccludedActor = OccludedActors.Find(Actor);
+
+	if (ExistingOccludedActor && ExistingOccludedActor->bIsOccluded)
+	{
+		if (bDebugLineTraces)
+			UE_LOG(LogTemp, Warning, TEXT("Actor %s was already occluded. Ignoring."), *Actor->GetName());
+		return false;
+	}
+
+	if (ExistingOccludedActor && IsValid(ExistingOccludedActor->Actor))
+	{
+		ExistingOccludedActor->bIsOccluded = true;
+		OnHideOccludedActor(*ExistingOccludedActor);
+
+		if (bDebugLineTraces)
+			UE_LOG(LogTemp, Warning, TEXT("Actor %s exists, but was not occluded. Occluding it now."), *Actor->GetName());
+	}
+	else
+	{
+		UStaticMeshComponent* StaticMesh = Cast<UStaticMeshComponent>(Actor->GetComponentByClass(UStaticMeshComponent::StaticClass()));
+
+		FCameraOccludedActor OccludedActor;
+		OccludedActor.Actor = Actor;
+		OccludedActor.StaticMesh = StaticMesh;
+		OccludedActor.Materials = StaticMesh->GetMaterials();
+		OccludedActor.bIsOccluded = true;
+		OccludedActors.Add(Actor, OccludedActor);
+		OnHideOccludedActor(OccludedActor);
+
+		if (bDebugLineTraces)
+			UE_LOG(LogTemp, Warning, TEXT("Actor %s does not exist, creating and occluding it now."), *Actor->GetName());
+	}
+
+	return true;
+}
+
+bool AAuraPlayerController::OnHideOccludedActor(const FCameraOccludedActor& OccludedActor) const
+{
+	for (int i = 0; i < OccludedActor.StaticMesh->GetNumMaterials(); ++i)
+	{
+		OccludedActor.StaticMesh->SetMaterial(i, FadeMaterial);
+	}
+	OccludedActor.StaticMesh->SetCollisionResponseToChannel(ECC_Visibility, ECR_Ignore);
+
+	return true;
+}
+
+void AAuraPlayerController::ShowOccludedActor(FCameraOccludedActor& OccludedActor)
+{
+	if (!IsValid(OccludedActor.Actor))
+	{
+		OccludedActors.Remove(OccludedActor.Actor);
+	}
+	OccludedActor.StaticMesh->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
+
+	OccludedActor.bIsOccluded = false;
+	OnShowOccludedActor(OccludedActor);
+}
+
+bool AAuraPlayerController::OnShowOccludedActor(const FCameraOccludedActor& OccludedActor) const
+{
+	for (int MatIdx = 0; MatIdx < OccludedActor.Materials.Num(); ++MatIdx)
+	{
+		OccludedActor.StaticMesh->SetMaterial(MatIdx, OccludedActor.Materials[MatIdx]);
+	}
+
+	return true;
+}
+
+void AAuraPlayerController::ForceShowOccludedActors()
+{
+	for (auto& Elem : OccludedActors)
+	{
+		if (Elem.Value.bIsOccluded)
+		{
+			ShowOccludedActor(Elem.Value);
+
+			if (bDebugLineTraces)
+				UE_LOG(LogTemp, Warning, TEXT("Actor %s was occluded, force to show again."), *Elem.Value.Actor->GetName());
+		}
+	}
+}
+
+bool AAuraPlayerController::ShouldCheckCameraOcclusion() const
+{
+	return bIsOcclusionEnabled && FadeMaterial && ActiveCamera && ActiveCapsuleComponent;
 }
