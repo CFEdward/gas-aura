@@ -42,7 +42,7 @@ class AURA_API ICombatInterface
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 	
 public:
-
+	
 	virtual int32 GetPlayerLevel();
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	FVector GetCombatSocketLocation(const FGameplayTag& MontageTag);
@@ -73,4 +73,6 @@ public:
 	int32 GetMinionCount();
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void ChangeMinionCountBy(const int32 Amount);
+
+	FORCEINLINE virtual float GetHalfHeight() const { return 0.f; }
 };

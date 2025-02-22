@@ -9,18 +9,22 @@
 #include "NavigationPath.h"
 #include "NavigationSystem.h"
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
+#include "Aura/Aura.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SplineComponent.h"
 #include "GameFramework/Character.h"
+#include "GameFramework/HUD.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Input/AuraInputComponent.h"
+#include "Interaction/CombatInterface.h"
 #include "Interaction/EnemyInterface.h"
+#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "UI/Widget/DamageTextComponent.h"
 
 AAuraPlayerController::AAuraPlayerController() :
-	bShiftKeyDown(false), CachedDestination(FVector::ZeroVector), FollowTime(0.f), ShortPressThreshold(0.5f), bAutoRunning(false),
+	bShiftKeyDown(false), FollowTime(0.f), ShortPressThreshold(0.5f), bAutoRunning(false),
 	AutoRunAcceptanceRadius(50.f), bTargeting(false)
 {
 	bReplicates = true;
@@ -47,6 +51,8 @@ void AAuraPlayerController::BeginPlay()
 	InputModeData.SetHideCursorDuringCapture(false);
 	SetInputMode(InputModeData);
 
+	NavSystem = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
+	
 	if (IsValid(GetPawn()))
 	{
 		ActiveSpringArm = Cast<USpringArmComponent>(GetPawn()->GetComponentByClass(USpringArmComponent::StaticClass()));
@@ -79,15 +85,51 @@ void AAuraPlayerController::ShowDamageNumber_Implementation(const float DamageAm
 void AAuraPlayerController::AutoRun()
 {
 	if (!bAutoRunning) return;
+	
 	if (APawn* ControlledPawn = GetPawn())
 	{
-		const FVector LocationOnSpline = Spline->FindLocationClosestToWorldLocation(ControlledPawn->GetActorLocation(), ESplineCoordinateSpace::World);
-		const FVector Direction = Spline->FindDirectionClosestToWorldLocation(LocationOnSpline, ESplineCoordinateSpace::World);
-		ControlledPawn->AddMovementInput(Direction);
-
-		if (const float DistanceToDestination = (LocationOnSpline - CachedDestination).Length(); DistanceToDestination <= AutoRunAcceptanceRadius)
+		const FVector PawnLocation = ControlledPawn->GetActorLocation();
+		const FVector LocationOnSpline = Spline->FindLocationClosestToWorldLocation(PawnLocation, ESplineCoordinateSpace::World);
+		const FVector TargetSplinePointLocation = Spline->GetLocationAtSplinePoint(TargetSplinePointIdx, ESplineCoordinateSpace::World);
+		FVector WorldDirection = TargetSplinePointLocation - PawnLocation;
+		WorldDirection.Z = 0.f;
+		// NOTE: We get the Normal after zeroing Z to get a constant movement speed along the XY plane
+		WorldDirection = WorldDirection.GetSafeNormal();
+		ControlledPawn->AddMovementInput(WorldDirection);
+		
+		const float DistanceToTarget = (LocationOnSpline - TargetSplinePointLocation).Length();
+		if (DistanceToTarget <= AutoRunAcceptanceRadius)
 		{
-			bAutoRunning = false;
+			if (const bool bNextTargetPointExist = TargetSplinePointIdx < Spline->GetNumberOfSplinePoints() - 1)
+			{
+				TargetSplinePointIdx++;
+			}
+			else
+			{
+				bAutoRunning = false;
+			}
+		}
+
+		if (bDebugNavEnabled)
+		{
+			for (int32 SplinePointIdx = 0; SplinePointIdx < Spline->GetNumberOfSplinePoints(); ++SplinePointIdx)
+			{
+				const FVector SplinePointLocation = Spline->GetLocationAtSplinePoint(SplinePointIdx, ESplineCoordinateSpace::World);
+				if (SplinePointIdx > 0)
+				{
+					const FVector PreviousSplinePointLocation = Spline->GetLocationAtSplinePoint(SplinePointIdx - 1, ESplineCoordinateSpace::World);
+					DrawDebugLine(GetWorld(), PreviousSplinePointLocation, SplinePointLocation, FColor::Red);
+				}
+				DrawDebugSphere(GetWorld(), LocationOnSpline, 20.f, 12, FColor::Cyan);
+
+				const FVector LineStart = PawnLocation + WorldDirection.GetSafeNormal() * 50.f;
+				const FVector LineEnd = LineStart + WorldDirection * 100.f;
+				UKismetSystemLibrary::DrawDebugArrow(this, LineStart, LineEnd, 20.f, FLinearColor::Yellow, 0.f, 4.f);
+
+				DrawDebugSphere(GetWorld(), TargetSplinePointLocation, 20.f, 12, FColor::Yellow);
+
+				UE_LOG(LogTemp, Warning, TEXT("TargetSplinePointIdx: %i, DistanceToTarget: %f"), TargetSplinePointIdx, DistanceToTarget);
+			}
 		}
 	}
 }
@@ -116,6 +158,7 @@ void AAuraPlayerController::AbilityInputTagPressed(FGameplayTag InputTag)
 {
 	if (InputTag.MatchesTagExact(FAuraGameplayTags::Get().InputTag_LMB))
 	{
+		ControlledPawnHalfHeight = Cast<ICombatInterface>(GetPawn())->GetHalfHeight();
 		bTargeting = ThisActor ? true : false;
 		bAutoRunning = false;
 	}
@@ -135,22 +178,46 @@ void AAuraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 	{
 		if (const APawn* ControlledPawn = GetPawn(); FollowTime <= ShortPressThreshold && ControlledPawn)
 		{
-			if (UNavigationPath* NavPath = UNavigationSystemV1::FindPathToLocationSynchronously(this, ControlledPawn->GetActorLocation(), CachedDestination))
+			FHitResult NavChannelCursorHitResult;
+			GetHitResultUnderCursor(ECC_Navigation, false, NavChannelCursorHitResult);
+			if (NavChannelCursorHitResult.bBlockingHit)
 			{
-				Spline->ClearSplinePoints();
-				for (const FVector& PointLoc : NavPath->PathPoints)
+				// Projecting a point from the cursor impact point to the NavMesh with a larger-than-default
+				// Query Extent, so there are better chances to reach for the NavMesh and return a point,
+				// then generating a path from the Pawn location to this point (only if found)
+				FNavLocation ImpactPointNavLocation;
+				// NOTE: Default Query Extent = FVector(50.f, 50.f, 250.f)
+				const FVector QueryingExtent = FVector(400.f, 400.f, 250.f);
+				const FNavAgentProperties& NavAgentProps = GetNavAgentPropertiesRef();
+				const bool bNavLocationFound = NavSystem->ProjectPointToNavigation(
+					NavChannelCursorHitResult.ImpactPoint,
+					ImpactPointNavLocation,
+					QueryingExtent,
+					&NavAgentProps
+				);
+				
+				if (bNavLocationFound)
 				{
-					Spline->AddSplinePoint(PointLoc, ESplineCoordinateSpace::World);
+					if (UNavigationPath* NavPath = UNavigationSystemV1::FindPathToLocationSynchronously(
+                    					this,
+                    					ControlledPawn->GetActorLocation(),
+                    					ImpactPointNavLocation
+                    ); NavPath && NavPath->PathPoints.Num() > 0)
+                    {
+                        Spline->ClearSplinePoints();
+                        for (const FVector& PointLoc : NavPath->PathPoints)
+                        {
+                            Spline->AddSplinePoint(PointLoc, ESplineCoordinateSpace::World);
+                        }
+						TargetSplinePointIdx = 1;
+                        bAutoRunning = true;
+                    }
 				}
-				if (NavPath->PathPoints.IsEmpty())
+
+				if (bDebugNavEnabled)
 				{
-					CachedDestination = ControlledPawn->GetActorLocation();    
+					DrawDebugBox(GetWorld(), NavChannelCursorHitResult.ImpactPoint, QueryingExtent, FColor::Silver, false, 3.f);
 				}
-				else
-				{
-					CachedDestination = NavPath->PathPoints.Last();
-				}
-				bAutoRunning = true;
 			}
 		}
 		
@@ -174,13 +241,28 @@ void AAuraPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
 	else
 	{
 		FollowTime += GetWorld()->GetDeltaSeconds();
-		
-		if (CursorHit.bBlockingHit) CachedDestination = CursorHit.ImpactPoint;
 
 		if (APawn* ControlledPawn = GetPawn())
 		{
-			const FVector WorldDirection = (CachedDestination - ControlledPawn->GetActorLocation()).GetSafeNormal();
-			ControlledPawn->AddMovementInput(WorldDirection);
+			const FVector PawnLocation = ControlledPawn->GetActorLocation();
+			FVector PawnBottomLocation = PawnLocation;
+			PawnBottomLocation.Z -= ControlledPawnHalfHeight;
+			FVector CursorHorizPlaneIntersection;
+			if (const bool bIntersectionFound = GetCursorPlaneIntersection(PawnBottomLocation, FVector::UpVector, CursorHorizPlaneIntersection))
+			{
+				FVector WorldDirection = (CursorHorizPlaneIntersection - PawnLocation).GetSafeNormal();
+				WorldDirection.Z = 0.f;
+				ControlledPawn->AddMovementInput(WorldDirection);
+
+				if (bDebugNavEnabled)
+				{
+					DrawDebugSphere(GetWorld(), CursorHorizPlaneIntersection, 20.f, 12, FColor::Green);
+					const FVector LineStart = PawnLocation + WorldDirection.GetSafeNormal() * 50.f;
+					const FVector LineEnd = LineStart + WorldDirection * 100.f;
+					UKismetSystemLibrary::DrawDebugArrow(this, LineStart, LineEnd, 20.f, FLinearColor::Green, 0.f, 4.f);
+				}
+				bAutoRunning = false;
+			}
 		}
 	}
 }
@@ -196,9 +278,43 @@ void AAuraPlayerController::Move(const FInputActionValue& InputActionValue)
 
 	if (APawn* ControlledPawn = GetPawn<APawn>())
 	{
+		bAutoRunning = false;
 		ControlledPawn->AddMovementInput(ForwardDirection, InputAxisVector.Y);
 		ControlledPawn->AddMovementInput(RightDirection, InputAxisVector.X);
 	}
+}
+
+bool AAuraPlayerController::GetCursorPlaneIntersection(const FVector& InPlaneOrigin, const FVector& InPlaneNormal, FVector& OutPlanePoint) const
+{
+	if (const ULocalPlayer* LocalPlayer = Cast<ULocalPlayer>(Player); LocalPlayer && LocalPlayer->ViewportClient)
+	{
+		FVector2D MousePosition;
+		if (const bool bMousePositionFound = LocalPlayer->ViewportClient->GetMousePosition(MousePosition))
+		{
+			return GetScreenPositionPlaneIntersection(MousePosition, InPlaneOrigin, InPlaneNormal, OutPlanePoint);
+		}
+	}
+
+	return false;
+}
+
+bool AAuraPlayerController::GetScreenPositionPlaneIntersection(const FVector2D& ScreenPosition, const FVector& InPlaneOrigin, const FVector& InPlaneNormal, FVector& OutPlanePoint) const
+{
+	// Early out if we clicked on a HUD hitbox
+	if (const AHUD* HUD = GetHUD(); HUD && HUD->GetHitBoxAtCoordinates(ScreenPosition, true))
+	{
+		return false;
+	}
+
+	FVector WorldOrigin;
+	FVector WorldDirection;
+	if (const bool bScreenPositionDeprojected = UGameplayStatics::DeprojectScreenToWorld(this, ScreenPosition, WorldOrigin, WorldDirection))
+	{
+		OutPlanePoint = FMath::LinePlaneIntersection(WorldOrigin, WorldOrigin + WorldDirection * HitResultTraceDistance, InPlaneOrigin, InPlaneNormal);
+		return true;
+	}
+
+	return false;
 }
 
 void AAuraPlayerController::CursorTrace()
@@ -235,9 +351,11 @@ void AAuraPlayerController::SyncOccludedActors()
 	CollisionObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_WorldStatic));
 
 	TArray<AActor*> ActorsToIgnore;	// TODO: Add configuration to ignore actor types
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AVolume::StaticClass(), ActorsToIgnore);
+	
 	TArray<FHitResult> OutHits;
 
-	const auto ShouldDebug = bDebugLineTraces ? EDrawDebugTrace::ForDuration : EDrawDebugTrace::None;
+	const auto ShouldDebug = bDebugOcclusionLineTraces ? EDrawDebugTrace::ForDuration : EDrawDebugTrace::None;
 
 	const bool bGotHits = UKismetSystemLibrary::CapsuleTraceMultiForObjects(
 		GetWorld(),
@@ -273,7 +391,7 @@ void AAuraPlayerController::SyncOccludedActors()
 			{
 				ShowOccludedActor(Elem.Value);
 
-				if (bDebugLineTraces)
+				if (bDebugOcclusionLineTraces)
 					UE_LOG(LogTemp, Warning, TEXT("Actor %s was occluded, but it's not occluded anymore with the new hits."), *Elem.Value.Actor->GetName());
 			}
 		}
@@ -290,7 +408,7 @@ bool AAuraPlayerController::HideOccludedActor(AActor* Actor)
 
 	if (ExistingOccludedActor && ExistingOccludedActor->bIsOccluded)
 	{
-		if (bDebugLineTraces)
+		if (bDebugOcclusionLineTraces)
 			UE_LOG(LogTemp, Warning, TEXT("Actor %s was already occluded. Ignoring."), *Actor->GetName());
 		return false;
 	}
@@ -300,7 +418,7 @@ bool AAuraPlayerController::HideOccludedActor(AActor* Actor)
 		ExistingOccludedActor->bIsOccluded = true;
 		OnHideOccludedActor(*ExistingOccludedActor);
 
-		if (bDebugLineTraces)
+		if (bDebugOcclusionLineTraces)
 			UE_LOG(LogTemp, Warning, TEXT("Actor %s exists, but was not occluded. Occluding it now."), *Actor->GetName());
 	}
 	else
@@ -312,10 +430,11 @@ bool AAuraPlayerController::HideOccludedActor(AActor* Actor)
 		OccludedActor.StaticMesh = StaticMesh;
 		OccludedActor.Materials = StaticMesh->GetMaterials();
 		OccludedActor.bIsOccluded = true;
+		OccludedActor.OriginalCollisionProfile = StaticMesh->GetCollisionProfileName();
 		OccludedActors.Add(Actor, OccludedActor);
 		OnHideOccludedActor(OccludedActor);
 
-		if (bDebugLineTraces)
+		if (bDebugOcclusionLineTraces)
 			UE_LOG(LogTemp, Warning, TEXT("Actor %s does not exist, creating and occluding it now."), *Actor->GetName());
 	}
 
@@ -324,11 +443,12 @@ bool AAuraPlayerController::HideOccludedActor(AActor* Actor)
 
 bool AAuraPlayerController::OnHideOccludedActor(const FCameraOccludedActor& OccludedActor) const
 {
+	OccludedActor.StaticMesh->SetCollisionResponseToChannel(ECC_Visibility, ECR_Ignore);
+	OccludedActor.StaticMesh->SetCollisionResponseToChannel(ECC_Navigation, ECR_Ignore);
 	for (int i = 0; i < OccludedActor.StaticMesh->GetNumMaterials(); ++i)
 	{
 		OccludedActor.StaticMesh->SetMaterial(i, FadeMaterial);
 	}
-	OccludedActor.StaticMesh->SetCollisionResponseToChannel(ECC_Visibility, ECR_Ignore);
 
 	return true;
 }
@@ -347,6 +467,7 @@ void AAuraPlayerController::ShowOccludedActor(FCameraOccludedActor& OccludedActo
 
 bool AAuraPlayerController::OnShowOccludedActor(const FCameraOccludedActor& OccludedActor) const
 {
+	OccludedActor.StaticMesh->SetCollisionProfileName(OccludedActor.OriginalCollisionProfile);
 	for (int MatIdx = 0; MatIdx < OccludedActor.Materials.Num(); ++MatIdx)
 	{
 		OccludedActor.StaticMesh->SetMaterial(MatIdx, OccludedActor.Materials[MatIdx]);
@@ -363,13 +484,8 @@ void AAuraPlayerController::ForceShowOccludedActors()
 		{
 			ShowOccludedActor(Elem.Value);
 
-			if (bDebugLineTraces)
+			if (bDebugOcclusionLineTraces)
 				UE_LOG(LogTemp, Warning, TEXT("Actor %s was occluded, force to show again."), *Elem.Value.Actor->GetName());
 		}
 	}
-}
-
-bool AAuraPlayerController::ShouldCheckCameraOcclusion() const
-{
-	return bIsOcclusionEnabled && FadeMaterial && ActiveCamera && ActiveCapsuleComponent;
 }

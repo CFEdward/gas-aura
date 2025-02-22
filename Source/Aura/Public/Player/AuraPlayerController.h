@@ -7,6 +7,7 @@
 #include "GameFramework/PlayerController.h"
 #include "AuraPlayerController.generated.h"
 
+class UNavigationSystemV1;
 class UCapsuleComponent;
 class UCameraComponent;
 class USpringArmComponent;
@@ -32,6 +33,9 @@ struct FCameraOccludedActor
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TArray<TObjectPtr<UMaterialInterface>> Materials;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	mutable FName OriginalCollisionProfile;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	bool bIsOccluded;
@@ -74,10 +78,8 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, Category = "Camera Occlusion|Components")
 	TObjectPtr<USpringArmComponent> ActiveSpringArm;
-
 	UPROPERTY(BlueprintReadWrite, Category = "Camera Occlusion|Components")
 	TObjectPtr<UCameraComponent> ActiveCamera;
-
 	UPROPERTY(BlueprintReadWrite, Category = "Camera Occlusion|Components")
 	TObjectPtr<UCapsuleComponent> ActiveCapsuleComponent;
 
@@ -85,7 +87,7 @@ protected:
 	bool bIsOcclusionEnabled = true;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera Occlusion|Occlusion")
-	bool bDebugLineTraces = true;
+	bool bDebugOcclusionLineTraces = false;
 
 private:
 
@@ -98,7 +100,11 @@ private:
 	UPROPERTY()
 	TObjectPtr<UAuraAbilitySystemComponent> AuraAbilitySystemComponent;
 	UAuraAbilitySystemComponent* GetASC();
-	
+
+	UPROPERTY()
+	TObjectPtr<UNavigationSystemV1> NavSystem;
+	UPROPERTY(EditDefaultsOnly)
+	bool bDebugNavEnabled = false;
 	UPROPERTY(EditAnywhere, Category = "Input")
 	TObjectPtr<UInputMappingContext> AuraContext;
 	UPROPERTY(EditAnywhere, Category = "Input")
@@ -110,6 +116,13 @@ private:
 	void ShiftPressed() { bShiftKeyDown = true; };
 	void ShiftReleased() { bShiftKeyDown = false; };
 
+	int32 TargetSplinePointIdx = 0;
+
+	float ControlledPawnHalfHeight = 0.f;
+
+	bool GetCursorPlaneIntersection(const FVector& InPlaneOrigin, const FVector& InPlaneNormal, FVector& OutPlanePoint) const;
+	bool GetScreenPositionPlaneIntersection(const FVector2D& ScreenPosition, const FVector& InPlaneOrigin, const FVector& InPlaneNormal, FVector& OutPlanePoint) const;
+
 	void CursorTrace();
 	FHitResult CursorHit;
 	TScriptInterface<IEnemyInterface> LastActor;
@@ -117,8 +130,7 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	TObjectPtr<UAuraInputConfig> InputConfig;
-
-	FVector CachedDestination;
+	
 	float FollowTime;
 	float ShortPressThreshold;
 	bool bAutoRunning;
@@ -138,5 +150,5 @@ private:
 	void ShowOccludedActor(FCameraOccludedActor& OccludedActor);
 	bool OnShowOccludedActor(const FCameraOccludedActor& OccludedActor) const;
 	void ForceShowOccludedActors();
-	bool ShouldCheckCameraOcclusion() const;
+	FORCEINLINE bool ShouldCheckCameraOcclusion() const { return bIsOcclusionEnabled && FadeMaterial && ActiveCamera && ActiveCapsuleComponent; }
 };
