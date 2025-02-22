@@ -379,6 +379,7 @@ void AAuraPlayerController::SyncOccludedActors()
 		// Hide actors that are occluded by the camera
 		for (FHitResult Hit : OutHits)
 		{
+			if (Hit.GetActor()->ActorHasTag(FName("IgnoreOcclusion"))) continue;
 			AActor* HitActor = Cast<AActor>(Hit.GetActor());
 			HideOccludedActor(HitActor);
 			ActorsJustOccluded.Add(HitActor);
