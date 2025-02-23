@@ -56,6 +56,8 @@ public:
 	FGameplayTag Abilities_Summon;
 	FGameplayTag Abilities_Fire_Bolt;
 
+	FGameplayTag Cooldown_Fire_Bolt;
+
 	FGameplayTag CombatSocket_Weapon;
 	FGameplayTag CombatSocket_RightHand;
 	FGameplayTag CombatSocket_LeftHand;
