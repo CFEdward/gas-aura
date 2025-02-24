@@ -38,7 +38,7 @@ struct FCameraOccludedActor
 	mutable FName OriginalCollisionProfile;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	bool bIsOccluded;
+	bool bIsOccluded = false;
 };
 
 /**

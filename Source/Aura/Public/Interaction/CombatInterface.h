@@ -8,6 +8,7 @@
 #include "CombatInterface.generated.h"
 
 class UNiagaraSystem;
+enum class ECharacterClass : uint8;
 
 USTRUCT(BlueprintType)
 struct FTaggedMontage
@@ -73,6 +74,9 @@ public:
 	int32 GetMinionCount();
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void ChangeMinionCountBy(const int32 Amount);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	ECharacterClass GetCharacterClass();
 
 	FORCEINLINE virtual float GetHalfHeight() const { return 0.f; }
 };
