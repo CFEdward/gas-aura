@@ -37,6 +37,12 @@ public:
 	FOnPlayerStatChanged OnLevelChangedDelegate;
 	void AddToLevel(const int32 InLevel);
 	void SetLevel(const int32 InLevel);
+
+	FOnPlayerStatChanged OnAttributePointsChangedDelegate;
+	void AddToAttributePoints(const int32 InAttributePoints);
+	
+	FOnPlayerStatChanged OnSpellPointsChangedDelegate;
+	void AddToSpellPoints(const int32 InSpellPoints);
 	
 protected:
 	
@@ -56,6 +62,16 @@ private:
 	int32 XP = 1;
 	UFUNCTION()
 	void OnRep_XP(int32 OldXP);
+
+	UPROPERTY(VisibleAnywhere, ReplicatedUsing = OnRep_AttributePoints)
+	int32 AttributePoints = 0;
+	UFUNCTION()
+	void OnRep_AttributePoints(int32 OldAttributePoints);
+
+	UPROPERTY(VisibleAnywhere, ReplicatedUsing = OnRep_SpellPoints)
+	int32 SpellPoints = 0;
+	UFUNCTION()
+	void OnRep_SpellPoints(int32 OldSpellPoints);
 	
 public:
 
@@ -65,4 +81,6 @@ public:
 	FORCEINLINE UAttributeSet* GetAttributeSet() const { return AttributeSet; }
 	FORCEINLINE int32 GetPlayerLevel() const { return Level; }
 	FORCEINLINE int32 GetXP() const { return XP;}
+	FORCEINLINE int32 GetAttributePoints() const { return AttributePoints; }
+	FORCEINLINE int32 GetSpellPoints() const { return SpellPoints; }
 };
