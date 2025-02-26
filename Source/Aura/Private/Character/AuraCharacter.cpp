@@ -59,6 +59,12 @@ void AAuraCharacter::InitAbilityActorInfo()
 		}
 	}
 
+	AuraPlayerState->OnLevelChangedDelegate.AddLambda([this](const int32 NewValue)
+		{
+			MulticastLevelUpParticles();
+		}
+	);
+	
 	InitializeDefaultAttributes();
 }
 
@@ -84,11 +90,6 @@ void AAuraCharacter::AddToXP_Implementation(int32 InXP)
 	AAuraPlayerState* AuraPlayerState = GetPlayerState<AAuraPlayerState>();
 	check(AuraPlayerState);
 	AuraPlayerState->AddToXP(InXP);
-}
-
-void AAuraCharacter::LevelUp_Implementation()
-{
-	MulticastLevelUpParticles();
 }
 
 void AAuraCharacter::MulticastLevelUpParticles_Implementation() const

@@ -5,6 +5,7 @@
 
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "AbilitySystem/AuraAttributeSet.h"
+#include "AbilitySystem/Data/LevelUpInfo.h"
 #include "Net/UnrealNetwork.h"
 
 AAuraPlayerState::AAuraPlayerState()
@@ -31,6 +32,22 @@ void AAuraPlayerState::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty
 void AAuraPlayerState::AddToXP(const int32 InXP)
 {
 	XP += InXP;
+
+	const int32 NewLevel = LevelUpInfo->FindLevelForXP(XP);
+	const int32 LevelUpsCount = NewLevel - Level;
+	if (LevelUpsCount > 0)
+	{
+		// Grant attribute/spell points per level surpassed
+		for (int32 SurpassedLevel = Level; SurpassedLevel < NewLevel; ++SurpassedLevel)
+		{
+			const int32 GrantedAttributePoints = LevelUpInfo->LevelUpInformation[SurpassedLevel].AttributePointAward;
+			AddToAttributePoints(GrantedAttributePoints);
+			const int32 GrantedSpellPoints = LevelUpInfo->LevelUpInformation[SurpassedLevel].SpellPointAward;
+			AddToSpellPoints(GrantedSpellPoints);
+		}
+		AddToLevel(LevelUpsCount);
+	}
+	
 	OnXPChangedDelegate.Broadcast(XP);
 }
 
@@ -75,6 +92,12 @@ UAbilitySystemComponent* AAuraPlayerState::GetAbilitySystemComponent() const
 void AAuraPlayerState::AddToLevel(const int32 InLevel)
 {
 	Level += InLevel;
+
+	// Force a recalculation of MMC_MaxHealth and BP_MMC_MaxMana's magnitudes, which depend on Level
+	OnModifierDependencyChanged.Broadcast();
+	// Maximize vital attributes using the updated magnitudes
+	Cast<UAuraAttributeSet>(AttributeSet)->MaximizeVitalAttributes();
+	
 	OnLevelChangedDelegate.Broadcast(Level);
 }
 
