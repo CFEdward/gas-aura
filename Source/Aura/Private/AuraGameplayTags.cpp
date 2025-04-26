@@ -227,6 +227,11 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FString("Fire Bolt Ability Tag")
 	);
 
+	GameplayTags.Abilities_Lightning_Electrocute = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Lightning.Electrocute"),
+		FString("Electrocute Ability Tag")
+	);
+
 	GameplayTags.Abilities_Status_Locked = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Abilities.Status.Locked"),
 		FString("Ability Locked Status")
