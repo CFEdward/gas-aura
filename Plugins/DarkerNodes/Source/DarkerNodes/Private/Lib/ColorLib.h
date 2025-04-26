@@ -129,7 +129,7 @@ public:
 		const float m = FMath::Min3(InColor.X, InColor.Y, InColor.Z);
 		const float C = M - m;
 
-		FVector OutColor;
+		FVector OutColor{};
 
 		if (C == 0.0f)
 		{
@@ -169,7 +169,7 @@ public:
 		const float X = C * (1 - FMath::Abs(FMath::Fmod(T, 2.0f) - 1));
 		const float m = Color.Z - C;
 
-		FVector OutColor;
+		FVector OutColor{};
 
 		if (T < 1)
 		{
