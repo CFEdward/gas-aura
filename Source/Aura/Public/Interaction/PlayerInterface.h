@@ -39,8 +39,6 @@ public:
 	UFUNCTION(BlueprintNativeEvent)
 	void AddToXP(int32 InXP);
 	UFUNCTION(BlueprintNativeEvent)
-	void AddToPlayerLevel(int32 InPlayerLevel);
-	UFUNCTION(BlueprintNativeEvent)
 	void AddToAttributePoints(int32 InAttributePoints);
 	UFUNCTION(BlueprintNativeEvent)
 	void AddToSpellPoints(int32 InSpellPoints);

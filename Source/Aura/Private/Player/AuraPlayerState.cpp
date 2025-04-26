@@ -19,7 +19,7 @@ AAuraPlayerState::AAuraPlayerState()
 	AttributeSet = CreateDefaultSubobject<UAuraAttributeSet>("AttributeSet");
 }
 
-void AAuraPlayerState::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+void AAuraPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
@@ -97,6 +97,10 @@ void AAuraPlayerState::AddToLevel(const int32 InLevel)
 	OnModifierDependencyChanged.Broadcast();
 	// Maximize vital attributes using the updated magnitudes
 	Cast<UAuraAttributeSet>(AttributeSet)->MaximizeVitalAttributes();
+	if (UAuraAbilitySystemComponent* AuraASC = Cast<UAuraAbilitySystemComponent>(AbilitySystemComponent))
+	{
+		AuraASC->UpdateAbilityStatuses(GetPlayerLevel());
+	}
 	
 	OnLevelChangedDelegate.Broadcast(Level);
 }
