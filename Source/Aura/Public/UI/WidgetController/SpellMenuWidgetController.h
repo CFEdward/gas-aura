@@ -6,6 +6,9 @@
 #include "UI/WidgetController/AuraWidgetController.h"
 #include "SpellMenuWidgetController.generated.h"
 
+class UAuraUserWidget;
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAbilitySelected, UAuraUserWidget*, AbilityButton);
+
 /**
  * 
  */
@@ -18,4 +21,12 @@ public:
 
 	virtual void BroadcastInitialValues() override;
 	virtual void BindCallbacksToDependencies() override;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnPlayerStatChangedSignature SpellPointsChanged;
+
+	UPROPERTY(BlueprintAssignable)
+	FAbilitySelected AbilitySelectedDelegate;
+	UFUNCTION(Blueprintcallable)
+	void SelectAbility(UAuraUserWidget* AbilityButton) const;
 };
