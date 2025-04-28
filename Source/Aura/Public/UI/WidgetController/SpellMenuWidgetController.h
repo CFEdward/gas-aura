@@ -44,6 +44,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetButtonsEnabled(const FGameplayTag& AbilityTag);
 
+	UFUNCTION(BlueprintCallable)
+	void SpendPointButtonPressed();
+
 private:
 
 	FSelectedAbility SelectedAbility{ FAuraGameplayTags::Get().Abilities_None, FAuraGameplayTags::Get().Abilities_Status_Locked };
