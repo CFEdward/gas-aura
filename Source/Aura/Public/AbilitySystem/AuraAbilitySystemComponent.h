@@ -46,12 +46,16 @@ public:
 	
 	void UpdateAbilityStatuses(int32 Level);
 
+	bool GetDescriptionsByAbilityTag(const FGameplayTag& AbilityTag, FString& OutDescription, FString& OutNextLevelDescription);
+
 	FEffectAssetTags EffectAssetTagsDelegate;
 	FAbilitiesGiven AbilitiesGivenDelegate;
 	FAbilityStatusChanged AbilityStatusChanged;
 
 protected:
 
+	virtual void OnGiveAbility(FGameplayAbilitySpec& AbilitySpec) override;
+	
 	virtual void OnRep_ActivateAbilities() override;
 	
 	UFUNCTION(Client, Reliable)

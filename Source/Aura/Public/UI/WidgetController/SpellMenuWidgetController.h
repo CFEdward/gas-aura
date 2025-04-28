@@ -10,7 +10,7 @@
 class UAuraUserWidget;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAbilitySelected, UAuraUserWidget*, AbilityButton);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FSetButtonsEnabled, bool, bSpendPointsButtonEnabled, bool, bEquipButtonEnabled);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FSetButtonsEnabled, bool, bSpendPointsButtonEnabled, bool, bEquipButtonEnabled, FString, Description, FString, NextLevelDescription);
 
 struct FSelectedAbility
 {

@@ -26,3 +26,18 @@ void UAuraGameplayAbility::ApplyCooldown(const FGameplayAbilitySpecHandle Handle
 		ApplyGameplayEffectSpecToOwner(Handle, ActorInfo, ActivationInfo, SpecHandle);
 	}
 }
+
+FString UAuraGameplayAbility::GetDescription(const int32 Level)
+{
+	return FString::Printf(TEXT("<Default>%s, </><Level>%d</>"), L"Default Ability Name - LoremIpsum LoremIpsum LoremIpsum LoremIpsum LoremIpsum", Level);
+}
+
+FString UAuraGameplayAbility::GetNextLevelDescription(const int32 Level)
+{
+	return FString::Printf(TEXT("<Default>Next Level: </><Level>%d</> \n<Default>Upgraded Ability.</>"), Level);
+}
+
+FString UAuraGameplayAbility::GetLockedDescription(const int32 Level)
+{
+	return FString::Printf(TEXT("<Default>Spell Locked until Level: %d</>"), Level);
+}

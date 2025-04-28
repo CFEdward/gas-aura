@@ -190,10 +190,25 @@ void UAuraAbilitySystemComponent::UpdateAbilityStatuses(int32 Level)
 			FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(Info.Ability, 1);
 			AbilitySpec.GetDynamicSpecSourceTags().AddTag(FAuraGameplayTags::Get().Abilities_Status_Eligible);
 			GiveAbility(AbilitySpec);
-			MarkAbilitySpecDirty(AbilitySpec);
-			ClientUpdateAbilityStatus(Info.AbilityTag, FAuraGameplayTags::Get().Abilities_Status_Eligible, 1);
 		}
 	}
+}
+
+bool UAuraAbilitySystemComponent::GetDescriptionsByAbilityTag(const FGameplayTag& AbilityTag, FString& OutDescription, FString& OutNextLevelDescription)
+{
+	if (const FGameplayAbilitySpec* AbilitySpec = GetSpecFromAbilityTag(AbilityTag))
+	{
+		if (UAuraGameplayAbility* AuraAbility = Cast<UAuraGameplayAbility>(AbilitySpec->Ability))
+		{
+			OutDescription = AuraAbility->GetDescription(AbilitySpec->Level);
+			OutNextLevelDescription = AuraAbility->GetNextLevelDescription(AbilitySpec->Level + 1);
+			return true;
+		}
+	}
+	const UAbilityInfo* AbilityInfo = UAuraAbilitySystemLibrary::GetAbilityInfo(GetAvatarActor());
+	OutDescription = UAuraGameplayAbility::GetLockedDescription(AbilityInfo->FindAbilityInfoForTag(AbilityTag).LevelRequirement);
+	OutNextLevelDescription = FString();
+	return false;
 }
 
 void UAuraAbilitySystemComponent::ServerUpgradeAttribute_Implementation(const FGameplayTag& AttributeTag)
@@ -207,6 +222,22 @@ void UAuraAbilitySystemComponent::ServerUpgradeAttribute_Implementation(const FG
 	if (GetAvatarActor()->Implements<UPlayerInterface>())
 	{
 		IPlayerInterface::Execute_AddToAttributePoints(GetAvatarActor(), -1);
+	}
+}
+
+void UAuraAbilitySystemComponent::OnGiveAbility(FGameplayAbilitySpec& AbilitySpec)
+{
+	Super::OnGiveAbility(AbilitySpec);
+
+	// NOTE: We only want to run the following code on locally controlled actors as we use it to update UI elements
+	if (!AbilityActorInfo->IsLocallyControlled()) return;
+
+	// If the ability just became Eligible (i.e. it was given as a result of the player levelling up),
+	// broadcast the change of the ability status
+	const FGameplayTag StatusTag = GetStatusFromSpec(AbilitySpec);
+	if (StatusTag.MatchesTagExact(FAuraGameplayTags::Get().Abilities_Status_Eligible))
+	{
+		AbilityStatusChanged.Broadcast(GetAbilityTagFromSpec(AbilitySpec), StatusTag, AbilitySpec.Level);
 	}
 }
 
