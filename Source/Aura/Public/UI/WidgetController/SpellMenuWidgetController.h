@@ -39,6 +39,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SpellGlobeSelected(UAuraUserWidget* AbilityButton) const;
 
+	UFUNCTION(BlueprintCallable)
+	void GlobeDeselect();
+
 	UPROPERTY(BlueprintAssignable)
 	FSetButtonsEnabled SetButtonsEnabledDelegate;
 	UFUNCTION(BlueprintCallable)

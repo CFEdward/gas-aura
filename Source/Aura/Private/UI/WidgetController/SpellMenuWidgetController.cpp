@@ -59,6 +59,14 @@ void USpellMenuWidgetController::SpellGlobeSelected(UAuraUserWidget* AbilityButt
 	AbilitySelectedDelegate.Broadcast(AbilityButton);
 }
 
+void USpellMenuWidgetController::GlobeDeselect()
+{
+	SelectedAbility.Ability = FAuraGameplayTags::Get().Abilities_None;
+	SelectedAbility.Status = FAuraGameplayTags::Get().Abilities_Status_Locked;
+
+	SetButtonsEnabledDelegate.Broadcast(false, false, FString(), FString());
+}
+
 void USpellMenuWidgetController::SetButtonsEnabled(const FGameplayTag& AbilityTag)
 {
 	const FAuraGameplayTags GameplayTags = FAuraGameplayTags::Get();
