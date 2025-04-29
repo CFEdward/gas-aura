@@ -3,6 +3,8 @@
 
 #include "AbilitySystem/Abilities/AuraGameplayAbility.h"
 
+#include "AbilitySystem/AuraAttributeSet.h"
+
 const FGameplayTagContainer* UAuraGameplayAbility::GetCooldownTags() const
 {
 	FGameplayTagContainer* MutableTags = const_cast<FGameplayTagContainer*>(&TempCooldownTags);
@@ -27,17 +29,30 @@ void UAuraGameplayAbility::ApplyCooldown(const FGameplayAbilitySpecHandle Handle
 	}
 }
 
-FString UAuraGameplayAbility::GetDescription(const int32 Level)
-{
-	return FString::Printf(TEXT("<Default>%s, </><Level>%d</>"), L"Default Ability Name - LoremIpsum LoremIpsum LoremIpsum LoremIpsum LoremIpsum", Level);
-}
-
-FString UAuraGameplayAbility::GetNextLevelDescription(const int32 Level)
-{
-	return FString::Printf(TEXT("<Default>Next Level: </><Level>%d</> \n<Default>Upgraded Ability.</>"), Level);
-}
-
 FString UAuraGameplayAbility::GetLockedDescription(const int32 Level)
 {
 	return FString::Printf(TEXT("<Default>Spell Locked until Level: %d</>"), Level);
+}
+
+float UAuraGameplayAbility::GetManaCost(const float InLevel) const
+{
+	float ManaCost = 0.f;
+	if (const UGameplayEffect* CostEffect = GetCostGameplayEffect())
+	{
+		for (auto Mod : CostEffect->Modifiers)
+		{
+			if (Mod.Attribute == UAuraAttributeSet::GetManaAttribute())
+			{
+				Mod.ModifierMagnitude.GetStaticMagnitudeIfPossible(InLevel, ManaCost);
+				break;
+			}
+		}
+	}
+
+	return FMath::Abs(ManaCost);
+}
+
+float UAuraGameplayAbility::GetCooldown(const float InLevel) const
+{
+	return CooldownDuration.GetValueAtLevel(InLevel);
 }

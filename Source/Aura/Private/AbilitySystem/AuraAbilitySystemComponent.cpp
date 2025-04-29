@@ -196,16 +196,17 @@ void UAuraAbilitySystemComponent::UpdateAbilityStatuses(int32 Level)
 
 bool UAuraAbilitySystemComponent::GetDescriptionsByAbilityTag(const FGameplayTag& AbilityTag, FString& OutDescription, FString& OutNextLevelDescription)
 {
+	UAbilityInfo* AbilityInfo = UAuraAbilitySystemLibrary::GetAbilityInfo(GetAvatarActor());
+	
 	if (const FGameplayAbilitySpec* AbilitySpec = GetSpecFromAbilityTag(AbilityTag))
 	{
-		if (UAuraGameplayAbility* AuraAbility = Cast<UAuraGameplayAbility>(AbilitySpec->Ability))
+		if (const FAuraAbilityInfo& Info = AbilityInfo->FindAbilityInfoForTag(AbilityTag); Info.Ability)
 		{
-			OutDescription = AuraAbility->GetDescription(AbilitySpec->Level);
-			OutNextLevelDescription = AuraAbility->GetNextLevelDescription(AbilitySpec->Level + 1);
+			OutDescription = AbilityInfo->FormatTextValues(AbilityTag, AbilitySpec->Level, Info.Description);
+			OutNextLevelDescription = AbilityInfo->FormatTextValues(AbilityTag, AbilitySpec->Level + 1, Info.NextLevelDescription);
 			return true;
 		}
 	}
-	const UAbilityInfo* AbilityInfo = UAuraAbilitySystemLibrary::GetAbilityInfo(GetAvatarActor());
 	OutDescription = UAuraGameplayAbility::GetLockedDescription(AbilityInfo->FindAbilityInfoForTag(AbilityTag).LevelRequirement);
 	OutNextLevelDescription = FString();
 	return false;

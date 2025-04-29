@@ -20,6 +20,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void CauseDamage(AActor* TargetActor);
 
+	float GetDamageAtLevel(const FGameplayTag& DamageType, const float InLevel = 1.f);
+	
 protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)

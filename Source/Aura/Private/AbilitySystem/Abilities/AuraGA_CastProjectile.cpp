@@ -67,3 +67,8 @@ void UAuraGA_CastProjectile::SpawnProjectile(const FVector& ProjectileTargetLoca
 	
 	Projectile->FinishSpawning(SpawnTransform);
 }
+
+int32 UAuraGA_CastProjectile::GetProjectileCount(const float InLevel) const
+{
+	return FMath::RoundToInt32(NumProjectiles.GetValueAtLevel(InLevel));
+}
