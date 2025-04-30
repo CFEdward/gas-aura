@@ -12,6 +12,7 @@ class UAuraUserWidget;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAbilitySelected, UAuraUserWidget*, AbilityButton);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FSetButtonsEnabled, bool, bSpendPointsButtonEnabled, bool, bEquipButtonEnabled, FString, Description, FString, NextLevelDescription);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FWaitForEquipSelection, const FGameplayTag&, AbilityType);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FSpellGlobeReassigned, const FGameplayTag&, AbilityTag);
 
 struct FSelectedAbility
 {
@@ -62,6 +63,9 @@ public:
 	void SpellRowGlobePressed(const FGameplayTag& SlotTag, const FGameplayTag& AbilityType);
 
 	void OnAbilityEquipped(const FGameplayTag& AbilityTag, const FGameplayTag& Status, const FGameplayTag& Slot, const FGameplayTag& PrevSlot);
+
+	UPROPERTY(BlueprintAssignable)
+	FSpellGlobeReassigned SpellGlobeReassignedDelegate;
 
 private:
 
