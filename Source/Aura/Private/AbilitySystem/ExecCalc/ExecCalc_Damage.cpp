@@ -101,8 +101,6 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 	FAggregatorEvaluateParameters EvaluationParameters;
 	EvaluationParameters.SourceTags = SourceTags;
 	EvaluationParameters.TargetTags = TargetTags;
-	
-	FGameplayEffectContextHandle EffectContextHandle = Spec.GetContext();
 	// ~ Boilerplate ~
 
 	float Damage = 0.f;
@@ -126,6 +124,7 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 		Damage += DamageTypeValue;
 	}
 	
+	FGameplayEffectContextHandle EffectContextHandle = Spec.GetContext();
 	// Capture BlockChance on Target and determine if there was a successful Block
 	float TargetBlockChance = 0.f;
 	ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(DamageStatics().BlockChanceDef, EvaluationParameters, TargetBlockChance);

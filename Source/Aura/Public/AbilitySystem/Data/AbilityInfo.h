@@ -68,5 +68,5 @@ public:
 
 	FAuraAbilityInfo FindAbilityInfoForTag(const FGameplayTag& AbilityTag, bool bLogNotFound = false) const;
 
-	FString FormatTextValues(const FGameplayTag& AbilityTag, const int32 Level, FString Description);
+	FString FormatTextValues(const FGameplayTag& AbilityTag, const int32 Level, const FString& Description) const;
 };

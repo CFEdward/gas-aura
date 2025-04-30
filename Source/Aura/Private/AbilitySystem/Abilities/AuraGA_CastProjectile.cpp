@@ -56,12 +56,8 @@ void UAuraGA_CastProjectile::SpawnProjectile(const FVector& ProjectileTargetLoca
 
 	const FAuraGameplayTags GameplayTags = FAuraGameplayTags::Get();
 
-	for (auto& Pair : DamageTypes)
-	{
-		const float ScaledDamage = Pair.Value.GetValueAtLevel(GetAbilityLevel());
-		UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, Pair.Key, ScaledDamage);
-		// SpecHandle.Data->SetSetByCallerMagnitude(GameplayTags.Damage, ScaledDamage); <- does the same thing as ^
-	}
+	const float ScaledDamage = Damage.GetValueAtLevel(GetAbilityLevel());
+	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, DamageType, ScaledDamage);
 
 	Projectile->DamageEffectSpecHandle = SpecHandle;
 	

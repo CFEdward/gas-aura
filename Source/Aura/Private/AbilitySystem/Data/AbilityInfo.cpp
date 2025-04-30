@@ -27,7 +27,7 @@ FAuraAbilityInfo UAbilityInfo::FindAbilityInfoForTag(const FGameplayTag& Ability
 	return FAuraAbilityInfo();
 }
 
-FString UAbilityInfo::FormatTextValues(const FGameplayTag& AbilityTag, const int32 Level, FString Description)
+FString UAbilityInfo::FormatTextValues(const FGameplayTag& AbilityTag, const int32 Level, const FString& Description) const
 {
 	UAuraGameplayAbility* AbilityDefault = Cast<UAuraGameplayAbility>(FindAbilityInfoForTag(AbilityTag).Ability.GetDefaultObject());
 	FStringFormatNamedArguments NamesToValues;
@@ -39,7 +39,7 @@ FString UAbilityInfo::FormatTextValues(const FGameplayTag& AbilityTag, const int
 		NamesToValues.Add(TEXT("_Cost"), FStringFormatArg(FString::SanitizeFloat(AbilityDefault->GetManaCost(Level))));
 		NamesToValues.Add(TEXT("_CD"), FStringFormatArg(FString::SanitizeFloat(AbilityDefault->GetCooldown(Level))));
 
-		if (UAuraDamageGameplayAbility* AuraDamageGA = static_cast<UAuraDamageGameplayAbility*>(AbilityDefault))
+		if (const UAuraDamageGameplayAbility* AuraDamageGA = static_cast<UAuraDamageGameplayAbility*>(AbilityDefault))
 		{
 			const FAuraGameplayTags& Tags = FAuraGameplayTags::Get();
 			
