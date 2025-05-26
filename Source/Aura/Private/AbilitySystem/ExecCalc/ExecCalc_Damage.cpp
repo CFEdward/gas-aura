@@ -149,7 +149,8 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 	// ~ Boilerplate ~
 
 	// Debuff
-	DetermineDebuff(ExecutionParams, Spec, EvaluationParameters, TagsToCaptureDefs);
+	const bool bIsDebuff = EvaluationParameters.TargetTags->HasTag(FGameplayTag::RequestGameplayTag("Debuff"));
+	if (!bIsDebuff) DetermineDebuff(ExecutionParams, Spec, EvaluationParameters, TagsToCaptureDefs);
 
 	float Damage = 0.f;
 	for (const auto& Pair : GameplayTags.DamageTypesToResistances)
@@ -173,15 +174,17 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 	}
 	
 	FGameplayEffectContextHandle EffectContextHandle = Spec.GetContext();
-	// Capture BlockChance on Target and determine if there was a successful Block
-	float TargetBlockChance = 0.f;
-	ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(DamageStatics().BlockChanceDef, EvaluationParameters, TargetBlockChance);
-	TargetBlockChance = FMath::Max<float>(TargetBlockChance, 0.f);
-	const bool bBlocked = FMath::FRandRange(UE_SMALL_NUMBER, 100.f) <= TargetBlockChance;
-	UAuraAbilitySystemLibrary::SetIsBlockedHit(EffectContextHandle, bBlocked);
-	
-	// If Block, halve the damage
-	Damage = bBlocked ? Damage * .5f : Damage;
+	if (!bIsDebuff)
+	{
+		// Capture BlockChance on Target and determine if there was a successful Block
+		float TargetBlockChance = 0.f;
+		ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(DamageStatics().BlockChanceDef, EvaluationParameters, TargetBlockChance);
+		TargetBlockChance = FMath::Max<float>(TargetBlockChance, 0.f);
+		const bool bBlocked = FMath::FRandRange(UE_SMALL_NUMBER, 100.f) <= TargetBlockChance;
+		UAuraAbilitySystemLibrary::SetIsBlockedHit(EffectContextHandle, bBlocked);
+		// If Block, halve the damage
+		Damage = bBlocked ? Damage * .5f : Damage;
+	}
 
 	float TargetArmor = 0.f;
 	ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(DamageStatics().ArmorDef, EvaluationParameters, TargetArmor);
@@ -204,25 +207,28 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 	// Armor ignores a percentage of incoming Damage
 	Damage *= (100.f - EffectiveArmor * EffectiveArmorCoefficient) / 100.f;
 
-	float SourceCriticalHitChance = 0.f;
-	ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(DamageStatics().CriticalHitChanceDef, EvaluationParameters, SourceCriticalHitChance);
-	SourceCriticalHitChance = FMath::Max<float>(SourceCriticalHitChance, 0.f);
+	if (!bIsDebuff)
+	{
+		float SourceCriticalHitChance = 0.f;
+		ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(DamageStatics().CriticalHitChanceDef, EvaluationParameters, SourceCriticalHitChance);
+		SourceCriticalHitChance = FMath::Max<float>(SourceCriticalHitChance, 0.f);
 
-	float TargetCriticalHitResistance = 0.f;
-	ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(DamageStatics().CriticalHitResistanceDef, EvaluationParameters, TargetCriticalHitResistance);
-	TargetCriticalHitResistance = FMath::Max<float>(TargetCriticalHitResistance, 0.f);
+		float TargetCriticalHitResistance = 0.f;
+		ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(DamageStatics().CriticalHitResistanceDef, EvaluationParameters, TargetCriticalHitResistance);
+		TargetCriticalHitResistance = FMath::Max<float>(TargetCriticalHitResistance, 0.f);
 
-	float SourceCriticalHitDamage = 0.f;
-	ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(DamageStatics().CriticalHitDamageDef, EvaluationParameters, SourceCriticalHitDamage);
-	SourceCriticalHitDamage = FMath::Max<float>(SourceCriticalHitDamage, 0.f);
+		float SourceCriticalHitDamage = 0.f;
+		ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(DamageStatics().CriticalHitDamageDef, EvaluationParameters, SourceCriticalHitDamage);
+		SourceCriticalHitDamage = FMath::Max<float>(SourceCriticalHitDamage, 0.f);
 
-	// Critical Hit Resistance reduces Critical Hit Chance by a certain percentage
-	const float EffectiveCriticalHitChance = SourceCriticalHitChance - TargetCriticalHitResistance * CriticalHitResistanceCoefficient;
-	const bool bCriticalHit = FMath::FRandRange(UE_SMALL_NUMBER, 100.f) <= EffectiveCriticalHitChance;
-	UAuraAbilitySystemLibrary::SetIsCriticalHit(EffectContextHandle, bCriticalHit);
-	
-	// Double Damage plus a bonus if Critical Hit
-	Damage = bCriticalHit ? 2.f * Damage + SourceCriticalHitDamage : Damage;
+		// Critical Hit Resistance reduces Critical Hit Chance by a certain percentage
+		const float EffectiveCriticalHitChance = SourceCriticalHitChance - TargetCriticalHitResistance * CriticalHitResistanceCoefficient;
+		const bool bCriticalHit = FMath::FRandRange(UE_SMALL_NUMBER, 100.f) <= EffectiveCriticalHitChance;
+		UAuraAbilitySystemLibrary::SetIsCriticalHit(EffectContextHandle, bCriticalHit);
+		
+		// Double Damage plus a bonus if Critical Hit
+		Damage = bCriticalHit ? 2.f * Damage + SourceCriticalHitDamage : Damage;
+	}
 	
 	const FGameplayModifierEvaluatedData EvaluatedData(UAuraAttributeSet::GetIncomingDamageAttribute(), EGameplayModOp::Additive, Damage);
 	OutExecutionOutput.AddOutputModifier(EvaluatedData);
