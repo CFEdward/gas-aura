@@ -34,10 +34,10 @@ public:
 
 	/** Combat Interface */
 	virtual int32 GetPlayerLevel_Implementation() override;
-	virtual void Die() override;
+	virtual void Die(const FVector& DeathImpulse) override;
 	/** end Combat Interface */
 	
-	virtual void MulticastHandleDeath_Implementation() override;
+	virtual void MulticastHandleDeath_Implementation(const FVector& DeathImpulse) override;
 	
 	void HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
 	UPROPERTY(BlueprintReadOnly, Category = "Combat")

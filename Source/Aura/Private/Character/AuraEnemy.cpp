@@ -144,20 +144,20 @@ int32 AAuraEnemy::GetPlayerLevel_Implementation()
 	return Level;
 }
 
-void AAuraEnemy::Die()
+void AAuraEnemy::Die(const FVector& DeathImpulse)
 {
 	SetLifeSpan(LifeSpan);
 	if (AuraAIController) AuraAIController->GetBlackboardComponent()->SetValueAsBool(FName("Dead"), true);
 	
-	Super::Die();
+	Super::Die(DeathImpulse);
 }
 
-void AAuraEnemy::MulticastHandleDeath_Implementation()
+void AAuraEnemy::MulticastHandleDeath_Implementation(const FVector& DeathImpulse)
 {
 	// Detach the HealthBar from the root component (capsule)
 	// NOTE: This prevents the HealthBar from falling through the ground (only on clients)
 	// "Show Collision" command shows that the capsule component doesn't fall through, so the root of the issue is still unclear
 	HealthBar->DetachFromComponent(FDetachmentTransformRules(EDetachmentRule::KeepWorld, true));
 	
-	Super::MulticastHandleDeath_Implementation();
+	Super::MulticastHandleDeath_Implementation(DeathImpulse);
 }

@@ -42,6 +42,11 @@ struct FDamageEffectParams
 	float DebuffDuration = 0.f;
 	UPROPERTY()
 	float DebuffFrequency = 0.f;
+
+	UPROPERTY()
+	float DeathImpulseMagnitude = 0.f;
+	UPROPERTY()
+	FVector DeathImpulse = FVector::ZeroVector;
 };
 
 USTRUCT(BlueprintType)
@@ -56,18 +61,22 @@ public:
 	bool IsBlockedHit() const {	return bIsBlockedHit; }
 	bool IsCriticalHit() const { return bIsCriticalHit; }
 	bool IsSuccessfulDebuff() const { return bIsSuccessfulDebuff; }
+	bool GetShouldHitReact() const { return bShouldHitReact; }
 	float GetDebuffDamage() const { return DebuffDamage; }
 	float GetDebuffDuration() const { return DebuffDuration; }
 	float GetDebuffFrequency() const { return DebuffFrequency; }
 	TSharedPtr<FGameplayTag> GetDamageType() const { return DamageType; }
+	FVector GetDeathImpulse() const { return DeathImpulse; }
 	
 	void SetIsBlockedHit(const bool bInIsBlockedHit) { bIsBlockedHit = bInIsBlockedHit; }
 	void SetIsCriticalHit(const bool bInIsCriticalHit) { bIsCriticalHit = bInIsCriticalHit; }
 	void SetIsSuccessfulDebuff(const bool bInIsSuccessfulDebuff) { bIsSuccessfulDebuff = bInIsSuccessfulDebuff; }
+	void SetShouldHitReact(const bool bInShouldHitReact) { bShouldHitReact = bInShouldHitReact; }
 	void SetDebuffDamage(const float InDebuffDamage) { DebuffDamage = InDebuffDamage; }
 	void SetDebuffDuration(const float InDebuffDuration) { DebuffDuration = InDebuffDuration; }
 	void SetDebuffFrequency(const float InDebuffFrequency) { DebuffFrequency = InDebuffFrequency; }
 	void SetDamageType(TSharedPtr<FGameplayTag> InDamageType) { DamageType = InDamageType; }
+	void SetDeathImpulse(const FVector& InImpulse) { DeathImpulse = InImpulse; }
 
 	/** Returns the actual struct used for serialization, subclasses must override this! */
 	virtual UScriptStruct* GetScriptStruct() const override
@@ -103,6 +112,9 @@ protected:
 	bool bIsSuccessfulDebuff = false;
 
 	UPROPERTY()
+	bool bShouldHitReact = true;
+
+	UPROPERTY()
 	float DebuffDamage = 0.f;
 	UPROPERTY()
 	float DebuffDuration = 0.f;
@@ -110,7 +122,9 @@ protected:
 	float DebuffFrequency = 0.f;
 
 	TSharedPtr<FGameplayTag> DamageType;
-	
+
+	UPROPERTY()
+	FVector DeathImpulse = FVector::ZeroVector;
 };
 
 template<>

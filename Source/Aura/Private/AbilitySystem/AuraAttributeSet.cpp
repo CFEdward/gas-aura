@@ -160,25 +160,28 @@ void UAuraAttributeSet::HandleIncomingDamage(const FEffectProperties& Props)
 		{
 			if (ICombatInterface* CombatInterface = Cast<ICombatInterface>(Props.TargetAvatarActor))
 			{
-				CombatInterface->Die();
+				CombatInterface->Die(UAuraAbilitySystemLibrary::GetDeathImpulse(Props.EffectContextHandle));
 			}
 			SendXPEvent(Props);
 		}
 		else
 		{
-			FGameplayTagContainer TagContainer;
-			TagContainer.AddTag(FAuraGameplayTags::Get().Abilities_HitReact);
-			Props.TargetASC->TryActivateAbilitiesByTag(TagContainer);
+			if (UAuraAbilitySystemLibrary::GetShouldHitReact(Props.EffectContextHandle))
+			{
+				FGameplayTagContainer TagContainer;
+				TagContainer.AddTag(FAuraGameplayTags::Get().Abilities_HitReact);
+				Props.TargetASC->TryActivateAbilitiesByTag(TagContainer);
+			}
+			
+			if (UAuraAbilitySystemLibrary::IsSuccessfulDebuff(Props.EffectContextHandle))
+			{
+				Debuff(Props);
+			}
 		}
 		
 		const bool bBlockedHit = UAuraAbilitySystemLibrary::IsBlockedHit(Props.EffectContextHandle);
 		const bool bCriticalHit = UAuraAbilitySystemLibrary::IsCriticalHit(Props.EffectContextHandle);
 		ShowFloatingText(Props, LocalIncomingDamage, bBlockedHit, bCriticalHit);
-
-		if (UAuraAbilitySystemLibrary::IsSuccessfulDebuff(Props.EffectContextHandle))
-		{
-			Debuff(Props);
-		}
 	}
 }
 
@@ -256,6 +259,7 @@ void UAuraAttributeSet::Debuff(const FEffectProperties& Props) const
 		FAuraGameplayEffectContext* AuraContext = static_cast<FAuraGameplayEffectContext*>(EffectContext.Get());
 		const TSharedPtr<FGameplayTag> DebuffDamageType = MakeShareable(new FGameplayTag(DamageType));
 		AuraContext->SetDamageType(DebuffDamageType);
+		AuraContext->SetShouldHitReact(false);
 		
 		//Props.TargetASC->ApplyGameplayEffectSpecToSelf(*MutableSpec);
 	}
