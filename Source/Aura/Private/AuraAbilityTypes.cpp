@@ -76,9 +76,13 @@ bool FAuraGameplayEffectContext::NetSerialize(FArchive& Ar, class UPackageMap* M
 		{
 			RepBits |= 1 << 15;
 		}
+		if (!KnockbackForce.IsZero())
+		{
+			RepBits |= 1 << 16;
+		}
 	}
 	
-	Ar.SerializeBits(&RepBits, 16);
+	Ar.SerializeBits(&RepBits, 17);
 	
 	if (RepBits & (1 << 0))
 	{
@@ -162,6 +166,10 @@ bool FAuraGameplayEffectContext::NetSerialize(FArchive& Ar, class UPackageMap* M
 	if (RepBits & (1 << 15))
 	{
 		Ar << bShouldHitReact;
+	}
+	if (RepBits & (1 << 16))
+	{
+		KnockbackForce.NetSerialize(Ar, Map, bOutSuccess);
 	}
 
 	if (Ar.IsLoading())
