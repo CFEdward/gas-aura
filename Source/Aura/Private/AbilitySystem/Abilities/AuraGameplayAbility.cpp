@@ -3,6 +3,7 @@
 
 #include "AbilitySystem/Abilities/AuraGameplayAbility.h"
 
+#include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "AbilitySystem/AuraAttributeSet.h"
 
 const FGameplayTagContainer* UAuraGameplayAbility::GetCooldownTags() const
@@ -55,4 +56,13 @@ float UAuraGameplayAbility::GetManaCost(const float InLevel) const
 float UAuraGameplayAbility::GetCooldown(const float InLevel) const
 {
 	return CooldownDuration.GetValueAtLevel(InLevel);
+}
+
+void UAuraGameplayAbility::OnAbilityAbnormallyEnded()
+{
+	UAuraAbilitySystemComponent* AuraAbilitySystemComponent = Cast<UAuraAbilitySystemComponent>(GetAbilitySystemComponentFromActorInfo());
+	if (AuraAbilitySystemComponent)
+	{
+		AuraAbilitySystemComponent->OnAbilityAbnormallyEnded(this);
+	}
 }

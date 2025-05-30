@@ -36,18 +36,21 @@ void UAuraGA_FireBolt::SpawnProjectiles(const FVector& ProjectileTargetLocation,
 
 		Projectile->DamageEffectParams = MakeDamageEffectParamsFromClassDefaults();
 
-		if (HomingTarget && HomingTarget->Implements<UCombatInterface>())
+		if (bLaunchHomingProjectiles)
 		{
-			Projectile->ProjectileMovement->HomingTargetComponent = HomingTarget->GetRootComponent();
+			if (HomingTarget && HomingTarget->Implements<UCombatInterface>())
+			{
+				Projectile->ProjectileMovement->HomingTargetComponent = HomingTarget->GetRootComponent();
+			}
+			else
+			{
+				Projectile->HomingTargetSceneComponent = NewObject<USceneComponent>(USceneComponent::StaticClass());
+				Projectile->HomingTargetSceneComponent->SetWorldLocation(ProjectileTargetLocation);
+				Projectile->ProjectileMovement->HomingTargetComponent = Projectile->HomingTargetSceneComponent;
+			}
+			Projectile->ProjectileMovement->HomingAccelerationMagnitude = FMath::FRandRange(HomingAccelerationMin, HomingAccelerationMax);
+			Projectile->ProjectileMovement->bIsHomingProjectile = bLaunchHomingProjectiles;
 		}
-		else
-		{
-			Projectile->HomingTargetSceneComponent = NewObject<USceneComponent>(USceneComponent::StaticClass());
-			Projectile->HomingTargetSceneComponent->SetWorldLocation(ProjectileTargetLocation);
-			Projectile->ProjectileMovement->HomingTargetComponent = Projectile->HomingTargetSceneComponent;
-		}
-		Projectile->ProjectileMovement->HomingAccelerationMagnitude = FMath::FRandRange(HomingAccelerationMin, HomingAccelerationMax);
-		Projectile->ProjectileMovement->bIsHomingProjectile = bLaunchHomingProjectiles;
 		
 		Projectile->FinishSpawning(SpawnTransform);
 	}

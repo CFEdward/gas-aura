@@ -36,4 +36,7 @@ public:
 
 	float GetManaCost(const float InLevel = 1.f) const;
 	float GetCooldown(const float InLevel = 1.f) const;
+
+	UFUNCTION(BlueprintCallable)
+	void OnAbilityAbnormallyEnded();
 };

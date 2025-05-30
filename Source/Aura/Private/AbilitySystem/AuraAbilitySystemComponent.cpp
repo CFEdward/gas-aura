@@ -43,6 +43,34 @@ void UAuraAbilitySystemComponent::AddCharacterPassiveAbilities(const TArray<TSub
 	}
 }
 
+void UAuraAbilitySystemComponent::AbilityInputTagPressed(const FGameplayTag& InputTag)
+{
+	if (!InputTag.IsValid()) return;
+
+	for (FGameplayAbilitySpec& AbilitySpec : GetActivatableAbilities())
+	{
+		if (AbilitySpec.GetDynamicSpecSourceTags().HasTagExact(InputTag))
+		{
+			AbilitySpecInputPressed(AbilitySpec);
+			if (AbilitySpec.IsActive())
+			{
+				if (const UGameplayAbility* PrimaryInstance = AbilitySpec.GetPrimaryInstance())
+				{
+					InvokeReplicatedEvent(
+						EAbilityGenericReplicatedEvent::InputPressed,
+						AbilitySpec.Handle,
+						PrimaryInstance->GetCurrentActivationInfo().GetActivationPredictionKey()
+					);
+				}
+			}
+			else
+			{
+				AbnormallyEndedAbilityInputTags.RemoveTag(InputTag);
+			}
+		}
+	}
+}
+
 void UAuraAbilitySystemComponent::AbilityInputTagHeld(const FGameplayTag& InputTag)
 {
 	if (!InputTag.IsValid()) return;
@@ -54,7 +82,12 @@ void UAuraAbilitySystemComponent::AbilityInputTagHeld(const FGameplayTag& InputT
 			AbilitySpecInputPressed(AbilitySpec);
 			if (!AbilitySpec.IsActive())
 			{
-				TryActivateAbility(AbilitySpec.Handle);
+				// NOTE: This stops an ability from trying to reactivate if we already ended the ability prematurely,
+				// because it failed to complete its job
+				if (!InputTag.MatchesAnyExact(AbnormallyEndedAbilityInputTags))
+				{
+					TryActivateAbility(AbilitySpec.Handle);
+				}
 			}
 		}
 	}
@@ -69,6 +102,17 @@ void UAuraAbilitySystemComponent::AbilityInputTagReleased(const FGameplayTag& In
 		if (AbilitySpec.GetDynamicSpecSourceTags().HasTagExact(InputTag))
 		{
 			AbilitySpecInputReleased(AbilitySpec);
+			if (AbilitySpec.IsActive())
+			{
+				if (const UGameplayAbility* PrimaryInstance = AbilitySpec.GetPrimaryInstance())
+				{
+					InvokeReplicatedEvent(
+						EAbilityGenericReplicatedEvent::InputReleased,
+						AbilitySpec.Handle,
+						PrimaryInstance->GetCurrentActivationInfo().GetActivationPredictionKey()
+					);
+				}
+			}
 		}
 	}
 }
@@ -296,6 +340,27 @@ bool UAuraAbilitySystemComponent::AbilityHasSlot(FGameplayAbilitySpec* Spec, con
 	}
 
 	return false;
+}
+
+void UAuraAbilitySystemComponent::OnAbilityAbnormallyEnded(const UGameplayAbility* GameplayAbility)
+{
+	const FGameplayTagContainer& AssetTags = GameplayAbility->GetAssetTags();
+	for (const FGameplayTag& AssetTag : AssetTags)
+	{
+		const FGameplayAbilitySpec* AbilitySpec = GetSpecFromAbilityTag(AssetTag);
+		if (AbilitySpec)
+		{
+			AbnormallyEndedAbilityInputTags.AddTag(GetInputTagFromSpec(*AbilitySpec));
+			break;
+		}
+	}
+
+	FString DebugString;
+	for (const FGameplayTag& Tag : AbnormallyEndedAbilityInputTags)
+	{
+		DebugString += FString::Printf(TEXT("%s "), *Tag.ToString());
+	}
+	GEngine->AddOnScreenDebugMessage(-1, 4.f, FColor::Green, DebugString);
 }
 
 void UAuraAbilitySystemComponent::ServerUpgradeAttribute_Implementation(const FGameplayTag& AttributeTag)
