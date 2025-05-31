@@ -11,3 +11,4 @@
 
 /* Trace collision channels */
 #define ECC_Navigation ECollisionChannel::ECC_GameTraceChannel2
+#define ECC_Target ECollisionChannel::ECC_GameTraceChannel3

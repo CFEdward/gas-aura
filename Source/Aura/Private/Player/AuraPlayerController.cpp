@@ -464,7 +464,7 @@ bool AAuraPlayerController::HideOccludedActor(AActor* Actor)
 
 bool AAuraPlayerController::OnHideOccludedActor(const FCameraOccludedActor& OccludedActor) const
 {
-	OccludedActor.StaticMesh->SetCollisionResponseToChannel(ECC_Visibility, ECR_Ignore);
+	OccludedActor.StaticMesh->SetCollisionResponseToChannel(ECC_Target, ECR_Ignore);
 	OccludedActor.StaticMesh->SetCollisionResponseToChannel(ECC_Navigation, ECR_Ignore);
 	for (int i = 0; i < OccludedActor.StaticMesh->GetNumMaterials(); ++i)
 	{
@@ -480,7 +480,7 @@ void AAuraPlayerController::ShowOccludedActor(FCameraOccludedActor& OccludedActo
 	{
 		OccludedActors.Remove(OccludedActor.Actor);
 	}
-	OccludedActor.StaticMesh->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
+	//OccludedActor.StaticMesh->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
 
 	OccludedActor.bIsOccluded = false;
 	OnShowOccludedActor(OccludedActor);
