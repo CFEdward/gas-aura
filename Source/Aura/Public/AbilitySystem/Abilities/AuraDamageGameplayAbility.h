@@ -22,6 +22,8 @@ public:
 	void CauseDamage(AActor* TargetActor);
 
 	float GetDamageAtLevel(const FGameplayTag& DmgType, const float InLevel = 1.f) const;
+	UFUNCTION(BlueprintPure)
+	float GetDamageAtCurrentLevel() const;
 
 	UFUNCTION(BlueprintPure)
 	FDamageEffectParams MakeDamageEffectParamsFromClassDefaults(AActor* TargetActor = nullptr) const;

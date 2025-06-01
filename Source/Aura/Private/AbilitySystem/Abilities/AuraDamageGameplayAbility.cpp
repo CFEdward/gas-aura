@@ -20,6 +20,11 @@ float UAuraDamageGameplayAbility::GetDamageAtLevel(const FGameplayTag& DmgType, 
 	else return 0.f;
 }
 
+float UAuraDamageGameplayAbility::GetDamageAtCurrentLevel() const
+{
+	return Damage.GetValueAtLevel(GetAbilityLevel());
+}
+
 FDamageEffectParams UAuraDamageGameplayAbility::MakeDamageEffectParamsFromClassDefaults(AActor* TargetActor) const
 {
 	FDamageEffectParams Params;

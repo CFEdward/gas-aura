@@ -36,6 +36,7 @@ public:
     virtual UAnimMontage* GetHitReactMontage_Implementation() override;
     virtual void Die(const FVector& DeathImpulse) override;
     virtual bool IsDead_Implementation() const override;
+	virtual FOnDeath& GetOnDeathDelegate() override;
     virtual AActor* GetAvatar_Implementation() override;
 	virtual TArray<FTaggedMontage> GetAttackMontages_Implementation() override;
 	virtual UNiagaraSystem* GetBloodEffect_Implementation() override;
@@ -44,12 +45,12 @@ public:
 	virtual void ChangeMinionCountBy_Implementation(const int32 Amount) override;
 	virtual ECharacterClass GetCharacterClass_Implementation() override;
 	virtual FOnASCRegistered GetOnASCRegisteredDelegate() override;
-	virtual FOnDeath GetOnDeathDelegate() override;
 	virtual USkeletalMeshComponent* GetWeapon_Implementation() override;
 	FORCEINLINE virtual float GetHalfHeight() const override { return GetCapsuleComponent()->GetScaledCapsuleHalfHeight(); }
     /** end Combat Interface */
 
 	FOnASCRegistered OnAscRegistered;
+	UPROPERTY(BlueprintAssignable)
 	FOnDeath OnDeath;
 	
 	UFUNCTION(NetMulticast, Reliable)

@@ -62,6 +62,10 @@ void UAuraGA_CastBeam::TraceFirstTarget(const FVector& BeamTargetLocation)
 			}
 		}
 	}
+
+	if (ICombatInterface* CombatInterface = Cast<ICombatInterface>(MouseHitActor))
+		if (!CombatInterface->GetOnDeathDelegate().IsAlreadyBound(this, &ThisClass::PrimaryTargetDied))
+			CombatInterface->GetOnDeathDelegate().AddDynamic(this, &ThisClass::PrimaryTargetDied);
 }
 
 void UAuraGA_CastBeam::StoreAdditionalTargets(TArray<AActor*>& OutAdditionalTargets)
@@ -96,4 +100,29 @@ void UAuraGA_CastBeam::StoreAdditionalTargets(TArray<AActor*>& OutAdditionalTarg
 		OutAdditionalTargets,
 		MouseHitActor->GetActorLocation()
 	);
+
+	for (AActor* Target : OutAdditionalTargets)
+	{
+		if (ICombatInterface* CombatInterface = Cast<ICombatInterface>(Target))
+			if (!CombatInterface->GetOnDeathDelegate().IsAlreadyBound(this, &ThisClass::AdditionalTargetDied))
+				CombatInterface->GetOnDeathDelegate().AddDynamic(this, &ThisClass::AdditionalTargetDied);
+	}
+}
+
+void UAuraGA_CastBeam::RemoveOnDeathBindingFromPrimaryTarget()
+{
+	ICombatInterface* CombatInterface = Cast<ICombatInterface>(MouseHitActor);
+	if (CombatInterface)
+	{
+		CombatInterface->GetOnDeathDelegate().RemoveDynamic(this, &ThisClass::PrimaryTargetDied);
+	}
+}
+
+void UAuraGA_CastBeam::RemoveOnDeathBindingFromAdditionalTarget(AActor* AdditionalTarget)
+{
+	ICombatInterface* CombatInterface = Cast<ICombatInterface>(AdditionalTarget);
+	if (CombatInterface)
+	{
+		CombatInterface->GetOnDeathDelegate().RemoveDynamic(this, &ThisClass::AdditionalTargetDied);
+	}
 }

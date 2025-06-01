@@ -42,6 +42,8 @@ public:
 	virtual int32 GetPlayerLevel_Implementation() override;
 	/** end Combat Interface */
 
+	UFUNCTION(NetMulticast, Reliable)
+	virtual void MulticastHandleDeath_Implementation(const FVector& DeathImpulse) override;
 	
 protected:
 
