@@ -234,14 +234,6 @@ void UAuraAttributeSet::Debuff(const FEffectProperties& Props) const
 	Execution.CalculationClass = UExecCalc_Damage::StaticClass();
 	Effect->Executions.Add(Execution);
 	
-	/*
-	const int32 Index = Effect->Modifiers.Add(FGameplayModifierInfo());
-	FGameplayModifierInfo& ModifierInfo = Effect->Modifiers[Index];
-
-	ModifierInfo.ModifierMagnitude = FScalableFloat(DebuffDamage);
-	ModifierInfo.ModifierOp = EGameplayModOp::Additive;
-	ModifierInfo.Attribute = GetIncomingDamageAttribute();*/
-	
 	if (TSharedPtr<FGameplayEffectSpec> MutableSpec = MakeShared<FGameplayEffectSpec>(Effect, EffectContext, 1.f))
 	{
 		if (UWorld* World = GetWorld())

@@ -11,10 +11,10 @@
 #include "Components/AudioComponent.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "Interaction/CombatInterface.h"
 #include "Kismet/GameplayStatics.h"
 
-AAuraProjectile::AAuraProjectile() :
-	LifeSpan(15.f), bHit(false)
+AAuraProjectile::AAuraProjectile()
 {
 	PrimaryActorTick.bCanEverTick = false;
 	bReplicates = true;
@@ -41,8 +41,27 @@ void AAuraProjectile::BeginPlay()
 	SetReplicateMovement(true);
 	SetLifeSpan(LifeSpan);
 	Sphere->OnComponentBeginOverlap.AddDynamic(this, &ThisClass::OnSphereOverlap);
+
+	if (HasAuthority() && ProjectileMovement->HomingTargetComponent.IsValid())
+	{
+		ICombatInterface* HomingTargetCombatInterface = Cast<ICombatInterface>(ProjectileMovement->HomingTargetComponent->GetOwner());
+		if (HomingTargetCombatInterface)
+		{
+			HomingTargetCombatInterface->GetOnDeathDelegate().AddUniqueDynamic(this, &ThisClass::OnHomingTargetDeath);
+			if (HomingTargetCombatInterface->Execute_IsDead(ProjectileMovement->HomingTargetComponent->GetOwner()))
+			{
+				ProjectileMovement->bIsHomingProjectile = false;
+				ProjectileMovement->ProjectileGravityScale = 1.f;
+			}
+		}
+	}
 	
 	LoopingSoundComponent = UGameplayStatics::SpawnSoundAttached(LoopingSound, GetRootComponent());
+}
+
+void AAuraProjectile::OnHomingTargetDeath(AActor* DeadActor)
+{
+	ProjectileMovement->bIsHomingProjectile = false;
 }
 
 void AAuraProjectile::OnHit()

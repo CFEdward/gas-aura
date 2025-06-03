@@ -59,6 +59,10 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	TArray<FTaggedMontage> AttackMontages;
 
+	//UPROPERTY(Replicated, BlueprintReadOnly, Category = "Combat")
+	//bool bIsStunned = false;
+	void StunTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
+
 protected:
 	
 	virtual void BeginPlay() override;

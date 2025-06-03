@@ -41,13 +41,16 @@ protected:
 
 private:
 
+	UFUNCTION()
+	void OnHomingTargetDeath(AActor* DeadActor);
+	
 	UPROPERTY(EditDefaultsOnly)
-	float LifeSpan;
+	float LifeSpan = 15.f;
 	
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<USphereComponent> Sphere;
 
-	bool bHit;
+	bool bHit = false;
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<UNiagaraSystem> ImpactEffect;
 	UPROPERTY(EditAnywhere)
