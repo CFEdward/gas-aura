@@ -91,8 +91,8 @@ void UAuraGA_CastBeam::StoreAdditionalTargets(TArray<AActor*>& OutAdditionalTarg
 		}
 	}
 
-	//const int32 NumAdditionalTargets = FMath::Min(GetAbilityLevel() - 1, MaxNumShockTargets);
-	const int32 NumAdditionalTargets = MaxNumShockTargets;
+	const int32 NumAdditionalTargets = FMath::Min(GetAbilityLevel() - 1, MaxNumShockTargets);
+	//const int32 NumAdditionalTargets = MaxNumShockTargets;
 
 	UAuraAbilitySystemLibrary::GetClosestTargets(
 		NumAdditionalTargets,

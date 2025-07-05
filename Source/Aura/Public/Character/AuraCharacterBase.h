@@ -26,6 +26,8 @@ public:
 	
 	AAuraCharacterBase();
 
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	
 	/** AbilitySystem Interface */
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	/** end AbilitySystem Interface */
@@ -48,7 +50,7 @@ public:
 	virtual USkeletalMeshComponent* GetWeapon_Implementation() override;
 	FORCEINLINE virtual float GetHalfHeight() const override { return GetCapsuleComponent()->GetScaledCapsuleHalfHeight(); }
     /** end Combat Interface */
-
+	
 	FOnASCRegistered OnAscRegistered;
 	UPROPERTY(BlueprintAssignable)
 	FOnDeath OnDeath;
@@ -59,9 +61,10 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	TArray<FTaggedMontage> AttackMontages;
 
-	//UPROPERTY(Replicated, BlueprintReadOnly, Category = "Combat")
-	//bool bIsStunned = false;
-	void StunTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
+	UPROPERTY(ReplicatedUsing = OnRep_Stunned, BlueprintReadOnly, Category = "Combat")
+	bool bIsStunned = false;
+	UFUNCTION()
+	virtual void OnRep_Stunned();
 
 protected:
 	
@@ -74,6 +77,11 @@ protected:
 
 	void AddCharacterAbilities();
 
+	virtual void StunTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
+	float BaseWalkSpeed = 600.f;
+	
 	bool bDead;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")

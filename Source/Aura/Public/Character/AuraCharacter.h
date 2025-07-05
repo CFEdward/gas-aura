@@ -45,6 +45,8 @@ public:
 	UFUNCTION(NetMulticast, Reliable)
 	virtual void MulticastHandleDeath_Implementation(const FVector& DeathImpulse) override;
 	
+	virtual void OnRep_Stunned() override;
+	
 protected:
 
 	virtual void InitAbilityActorInfo() override;

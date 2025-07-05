@@ -224,42 +224,34 @@ void UAuraAttributeSet::Debuff(const FEffectProperties& Props) const
 	//Effect->InheritableOwnedTagsContainer.AddTag(GameplayTags.DamageTypesToDebuffs[DamageType]);
 	FInheritedTagContainer TagContainer = FInheritedTagContainer();
 	UTargetTagsGameplayEffectComponent& Component = Effect->FindOrAddComponent<UTargetTagsGameplayEffectComponent>();
-	TagContainer.Added.AddTag(GameplayTags.DamageTypesToDebuffs[DamageType]);
+	const FGameplayTag DebuffTag = GameplayTags.DamageTypesToDebuffs[DamageType];
+	TagContainer.Added.AddTag(DebuffTag);
+	if (DebuffTag.MatchesTagExact(FAuraGameplayTags::Get().Debuff_Stun))
+	{
+		TagContainer.Added.AddTag(GameplayTags.Player_Block_CursorTrace);
+		TagContainer.Added.AddTag(GameplayTags.Player_Block_InputHeld);
+		TagContainer.Added.AddTag(GameplayTags.Player_Block_InputPressed);
+		TagContainer.Added.AddTag(GameplayTags.Player_Block_InputReleased);
+	}
 	Component.SetAndApplyTargetTagChanges(TagContainer);
 
 	Effect->StackingType = EGameplayEffectStackingType::AggregateBySource;
 	Effect->StackLimitCount = 1;
+	Effect->bExecutePeriodicEffectOnApplication = false;
 
 	FGameplayEffectExecutionDefinition Execution;
 	Execution.CalculationClass = UExecCalc_Damage::StaticClass();
 	Effect->Executions.Add(Execution);
 	
-	if (TSharedPtr<FGameplayEffectSpec> MutableSpec = MakeShared<FGameplayEffectSpec>(Effect, EffectContext, 1.f))
-	{
-		if (UWorld* World = GetWorld())
-		{
-			TWeakObjectPtr<UAbilitySystemComponent> TargetASC = Props.TargetASC;
-			FTimerHandle TimerHandle;
-			World->GetTimerManager().SetTimer(TimerHandle, [TargetASC, MutableSpec, DamageType, DebuffDamage]()
-			{
-				if (MutableSpec.IsValid() && MutableSpec.Get()->GetContext().IsValid() && TargetASC.IsValid())
-				{
-					MutableSpec->SetSetByCallerMagnitude(DamageType, DebuffDamage);
-					TargetASC->ApplyGameplayEffectSpecToSelf(*MutableSpec);
-				}
-			}, 1.f, false);
-		}
-	}
-	
 	if (FGameplayEffectSpec* MutableSpec = new FGameplayEffectSpec(Effect, EffectContext, 1.f))
 	{
 		MutableSpec->SetSetByCallerMagnitude(DamageType, DebuffDamage);
-		FAuraGameplayEffectContext* AuraContext = static_cast<FAuraGameplayEffectContext*>(EffectContext.Get());
+		FAuraGameplayEffectContext* AuraContext = static_cast<FAuraGameplayEffectContext*>(MutableSpec->GetContext().Get());
 		const TSharedPtr<FGameplayTag> DebuffDamageType = MakeShareable(new FGameplayTag(DamageType));
 		AuraContext->SetDamageType(DebuffDamageType);
 		AuraContext->SetShouldHitReact(false);
 		
-		//Props.TargetASC->ApplyGameplayEffectSpecToSelf(*MutableSpec);
+		Props.TargetASC->ApplyGameplayEffectSpecToSelf(*MutableSpec);
 	}
 }
 
@@ -273,7 +265,7 @@ void UAuraAttributeSet::ShowFloatingText(const FEffectProperties& Props, const f
 {
 	if (Props.SourceCharacter != Props.TargetCharacter)
 	{
-		if (AAuraPlayerController* PC = Cast<AAuraPlayerController>(Props.TargetCharacter->Controller))
+		if (AAuraPlayerController* PC = Cast<AAuraPlayerController>(Props.SourceCharacter->Controller))
 		{
 			PC->ShowDamageNumber(Damage, Props.TargetCharacter, bBlockedHit, bCriticalHit);
 			return;
