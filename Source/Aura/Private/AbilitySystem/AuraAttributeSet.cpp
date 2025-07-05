@@ -250,6 +250,10 @@ void UAuraAttributeSet::Debuff(const FEffectProperties& Props) const
 		const TSharedPtr<FGameplayTag> DebuffDamageType = MakeShareable(new FGameplayTag(DamageType));
 		AuraContext->SetDamageType(DebuffDamageType);
 		AuraContext->SetShouldHitReact(false);
+
+		const FGameplayTagContainer AbilitiesToCancelTags(GameplayTags.Abilities);
+		const FGameplayTagContainer AbilitiesToIgnoreTags(GameplayTags.Abilities_Passive);
+		Props.TargetASC->CancelAbilities(&AbilitiesToCancelTags, &AbilitiesToIgnoreTags);
 		
 		Props.TargetASC->ApplyGameplayEffectSpecToSelf(*MutableSpec);
 	}

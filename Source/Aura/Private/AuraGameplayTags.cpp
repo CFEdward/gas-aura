@@ -250,6 +250,16 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	* Abilities
 	*/
 
+	GameplayTags.Abilities = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities"),
+		FString("Base Ability Tag")
+	);
+
+	GameplayTags.Abilities_Passive = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Passive"),
+		FString("Base Passive Ability Tag")
+	);
+	
 	GameplayTags.Abilities_None = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Abilities.None"),
 		FString("Default Ability Tag")
