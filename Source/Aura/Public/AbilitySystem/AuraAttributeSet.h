@@ -215,7 +215,7 @@ public:
 
 private:
 
-	void HandleIncomingDamage(const FEffectProperties& Props);
+	void HandleIncomingDamage(const FEffectProperties& Props, const bool bIsDot);
 	void HandleIncomingXP(const FEffectProperties& Props);
 
 	void Debuff(const FEffectProperties& Props) const;

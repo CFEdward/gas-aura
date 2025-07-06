@@ -139,7 +139,8 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 		
 	if (Data.EvaluatedData.Attribute == GetIncomingDamageAttribute())
 	{
-		HandleIncomingDamage(Props);
+		const bool bIsDot = Data.EffectSpec.GetPeriod() > 0.f;
+		HandleIncomingDamage(Props, bIsDot);
 	}
 	if (Data.EvaluatedData.Attribute == GetIncomingXPAttribute())
 	{
@@ -147,7 +148,7 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 	}
 }
 
-void UAuraAttributeSet::HandleIncomingDamage(const FEffectProperties& Props)
+void UAuraAttributeSet::HandleIncomingDamage(const FEffectProperties& Props, const bool bIsDot)
 {
 	const float LocalIncomingDamage = GetIncomingDamage();
 	SetIncomingDamage(0.f);
@@ -166,14 +167,12 @@ void UAuraAttributeSet::HandleIncomingDamage(const FEffectProperties& Props)
 		}
 		else
 		{
-			if (Props.TargetCharacter->Implements<UCombatInterface>())
-			{
-				UAuraAbilitySystemLibrary::SetShouldHitReact(const_cast<FGameplayEffectContextHandle&>(Props.EffectContextHandle), !ICombatInterface::Execute_IsBeingShocked(Props.TargetCharacter));
-			}
-			if (UAuraAbilitySystemLibrary::GetShouldHitReact(Props.EffectContextHandle))
+			const bool bIsBeingShocked = Props.TargetCharacter->Implements<UCombatInterface>() && ICombatInterface::Execute_IsBeingShocked(Props.TargetCharacter);
+			const bool bShouldHitReact = (!bIsDot && !bIsBeingShocked);
+			if (bShouldHitReact)
 			{
 				FGameplayTagContainer TagContainer;
-				TagContainer.AddTag(FAuraGameplayTags::Get().Abilities_HitReact);
+				TagContainer.AddTag(FAuraGameplayTags::Get().Abilities_Passive_HitReact);
 				Props.TargetASC->TryActivateAbilitiesByTag(TagContainer);
 			}
 
@@ -253,7 +252,7 @@ void UAuraAttributeSet::Debuff(const FEffectProperties& Props) const
 		FAuraGameplayEffectContext* AuraContext = static_cast<FAuraGameplayEffectContext*>(MutableSpec->GetContext().Get());
 		const TSharedPtr<FGameplayTag> DebuffDamageType = MakeShareable(new FGameplayTag(DamageType));
 		AuraContext->SetDamageType(DebuffDamageType);
-		AuraContext->SetShouldHitReact(false);
+		//AuraContext->SetShouldHitReact(false);
 
 		const FGameplayTagContainer AbilitiesToCancelTags(GameplayTags.Abilities);
 		const FGameplayTagContainer AbilitiesToIgnoreTags(GameplayTags.Abilities_Passive);
