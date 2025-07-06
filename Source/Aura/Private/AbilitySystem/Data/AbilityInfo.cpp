@@ -6,6 +6,7 @@
 #include "AuraGameplayTags.h"
 #include "AbilitySystem/Abilities/AuraDamageGameplayAbility.h"
 #include "AbilitySystem/Abilities/AuraGameplayAbility.h"
+#include "AbilitySystem/Abilities/AuraGA_CastBeam.h"
 #include "AbilitySystem/Abilities/AuraGA_CastProjectile.h"
 #include "Aura/AuraLogChannels.h"
 
@@ -52,6 +53,10 @@ FString UAbilityInfo::FormatTextValues(const FGameplayTag& AbilityTag, const int
 		if (const UAuraGA_CastProjectile* AuraProjectileSpell = static_cast<UAuraGA_CastProjectile*>(AbilityDefault))
 		{
 			NamesToValues.Add(TEXT("_ProjNum"), FStringFormatArg(AuraProjectileSpell->GetProjectileCount(Level)));
+		}
+		if (const UAuraGA_CastBeam* AuraBeamSpell = static_cast<UAuraGA_CastBeam*>(AbilityDefault))
+		{
+			NamesToValues.Add(TEXT("_BeamNum"), FStringFormatArg(FMath::Min(Level - 1, AuraBeamSpell->GetMaxNumShockTargets())));
 		}
 	}
 

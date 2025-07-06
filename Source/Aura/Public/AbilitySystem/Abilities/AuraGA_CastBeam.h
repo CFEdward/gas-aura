@@ -35,6 +35,8 @@ public:
 	void AdditionalTargetDied(AActor* DeadActor);
 	UFUNCTION(BlueprintCallable)
 	void RemoveOnDeathBindingFromAdditionalTarget(AActor* AdditionalActor);
+
+	int32 GetMaxNumShockTargets() const { return MaxNumShockTargets; }
 	
 protected:
 

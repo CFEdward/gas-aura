@@ -35,7 +35,7 @@ struct FAuraAbilityInfo
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TSubclassOf<UGameplayAbility> Ability = nullptr;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (MultiLine = "true"))
 	FString Description = FString(TEXT("<Title>Name</>\n\n"
 		"<Small>Level: </><Level>{_Level}</>\n"
 		"<Small>Cost: </><ManaCost>{_Cost}</>\n"
@@ -43,7 +43,7 @@ struct FAuraAbilityInfo
 		"<Default>Launches {_ProjNum} bolts of fire, exploding on impact and dealing </><Damage>{_FireDmg}</><Default> fire damage with a chance to burn.</>")
 	);
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (MultiLine = "true"))
 	FString NextLevelDescription = Description;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
