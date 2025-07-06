@@ -47,6 +47,8 @@ public:
 	virtual void ChangeMinionCountBy_Implementation(const int32 Amount) override;
 	virtual ECharacterClass GetCharacterClass_Implementation() override;
 	virtual FOnASCRegistered& GetOnASCRegisteredDelegate() override;
+	virtual void SetIsBeingShocked_Implementation(const bool bInShock) override;
+	virtual bool IsBeingShocked_Implementation() const override;
 	virtual USkeletalMeshComponent* GetWeapon_Implementation() override;
 	FORCEINLINE virtual float GetHalfHeight() const override { return GetCapsuleComponent()->GetScaledCapsuleHalfHeight(); }
     /** end Combat Interface */
@@ -70,6 +72,9 @@ public:
 	bool bIsStunned = false;
 	UFUNCTION()
 	virtual void OnRep_Stunned();
+
+	UPROPERTY(Replicated, BlueprintReadOnly, Category = "Combat")
+	bool bIsBeingShocked = false;
 
 protected:
 	
