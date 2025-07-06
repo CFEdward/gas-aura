@@ -7,6 +7,7 @@
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "AbilitySystem/Data/CharacterClassInfo.h"
 #include "AbilitySystem/Debuff/DebuffNiagaraComponent.h"
+#include "AbilitySystem/Passive/PassiveNiagaraComponent.h"
 #include "Aura/Aura.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -36,6 +37,18 @@ AAuraCharacterBase::AAuraCharacterBase() :
 	Weapon = CreateDefaultSubobject<USkeletalMeshComponent>("Weapon");
 	Weapon->SetupAttachment(GetMesh(), FName("WeaponHandSocket"));
 	Weapon->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	EffectAttachComponent = CreateDefaultSubobject<USceneComponent>("Effect Attach Point");
+	EffectAttachComponent->SetupAttachment(GetRootComponent());
+	EffectAttachComponent->SetUsingAbsoluteRotation(true);
+	EffectAttachComponent->SetWorldRotation(FRotator::ZeroRotator);
+
+	HaloOfProtNiagaraComp = CreateDefaultSubobject<UPassiveNiagaraComponent>("Halo of Protection Component");
+	HaloOfProtNiagaraComp->SetupAttachment(EffectAttachComponent);
+	LifeSiphonNiagaraComp = CreateDefaultSubobject<UPassiveNiagaraComponent>("Life Siphon Component");
+	LifeSiphonNiagaraComp->SetupAttachment(EffectAttachComponent);
+	ManaSiphonNiagaraComp = CreateDefaultSubobject<UPassiveNiagaraComponent>("Mana Siphon Component");
+	ManaSiphonNiagaraComp->SetupAttachment(EffectAttachComponent);
 }
 
 void AAuraCharacterBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
