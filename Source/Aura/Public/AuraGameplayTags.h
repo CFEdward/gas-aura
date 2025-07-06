@@ -67,7 +67,6 @@ public:
 	FGameplayTag Debuff_Frequency;
 
 	FGameplayTag Abilities;
-	FGameplayTag Abilities_Passive;
 	FGameplayTag Abilities_None;
 	FGameplayTag Abilities_Attack;
 	FGameplayTag Abilities_Summon;
@@ -81,6 +80,11 @@ public:
 	FGameplayTag Abilities_Type_Passive;
 	FGameplayTag Abilities_Fire_Bolt;
 	FGameplayTag Abilities_Lightning_Electrocute;
+
+	FGameplayTag Abilities_Passive;
+	FGameplayTag Abilities_Passive_HaloOfProtection;
+	FGameplayTag Abilities_Passive_LifeSiphon;
+	FGameplayTag Abilities_Passive_ManaSiphon;
 
 	FGameplayTag Cooldown_Fire_Bolt;
 
