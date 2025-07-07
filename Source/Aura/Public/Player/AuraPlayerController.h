@@ -7,6 +7,7 @@
 #include "GameFramework/PlayerController.h"
 #include "AuraPlayerController.generated.h"
 
+class AMagicCircle;
 class UNiagaraSystem;
 class UNavigationSystemV1;
 class UCapsuleComponent;
@@ -61,6 +62,11 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void SyncOccludedActors();
+
+	UFUNCTION(BlueprintCallable)
+	void ShowMagicCircle();
+	UFUNCTION(BlueprintCallable)
+	void HideMagicCircle();
 	
 protected:
 	
@@ -149,6 +155,12 @@ private:
 
 	TMap<const TObjectPtr<AActor>, FCameraOccludedActor> OccludedActors;
 
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<AMagicCircle> MagicCircleClass;
+	UPROPERTY()
+	TObjectPtr<AMagicCircle> MagicCircle;
+	void UpdateMagicCircleLocation();
+	
 	bool HideOccludedActor(AActor* Actor);
 	bool OnHideOccludedActor(const FCameraOccludedActor& OccludedActor) const;
 	void ShowOccludedActor(FCameraOccludedActor& OccludedActor);
