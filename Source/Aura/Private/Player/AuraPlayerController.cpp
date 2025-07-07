@@ -14,6 +14,7 @@
 #include "Aura/Aura.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/DecalComponent.h"
 #include "Components/SplineComponent.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/HUD.h"
@@ -425,12 +426,16 @@ void AAuraPlayerController::SyncOccludedActors()
 	}
 }
 
-void AAuraPlayerController::ShowMagicCircle()
+void AAuraPlayerController::ShowMagicCircle(UMaterialInterface* DecalMaterial)
 {
 	if (!IsValid(MagicCircle))
 	{
 		const FVector MagicCircleLoc = CursorHit.ImpactPoint;
 		MagicCircle = GetWorld()->SpawnActor<AMagicCircle>(MagicCircleClass, MagicCircleLoc, FRotator::ZeroRotator);
+		if (DecalMaterial)
+		{
+			MagicCircle->GetMagicCircleDecalComp()->SetMaterial(0, DecalMaterial);
+		}
 	}
 }
 
