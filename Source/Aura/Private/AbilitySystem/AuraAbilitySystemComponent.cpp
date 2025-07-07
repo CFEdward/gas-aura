@@ -50,8 +50,30 @@ void UAuraAbilitySystemComponent::AbilityInputTagPressed(const FGameplayTag& Inp
 	FScopedAbilityListLock ActiveScopeLock(*this);
 	for (FGameplayAbilitySpec& AbilitySpec : GetActivatableAbilities())
 	{
-		if (AbilitySpec.GetDynamicSpecSourceTags().HasTagExact(InputTag))
+		// Is an already active spell waiting for execution?
+		if (HasMatchingGameplayTag(FAuraGameplayTags::Get().Abilities_Status_WaitingExecution))
 		{
+			if (AbilitySpec.Ability->AbilityTags.HasTagExact(FAuraGameplayTags::Get().Abilities_Status_WaitingExecution) && AbilitySpec.IsActive())
+			{
+				// Execute
+				if (InputTag.MatchesTagExact(FAuraGameplayTags::Get().InputTag_LMB))
+				{
+					AbilitySpecInputPressed(AbilitySpec);
+					if (const UGameplayAbility* PrimaryInstance = AbilitySpec.GetPrimaryInstance())
+					{
+						InvokeReplicatedEvent(
+							EAbilityGenericReplicatedEvent::InputPressed,
+							AbilitySpec.Handle,
+							PrimaryInstance->GetCurrentActivationInfo().GetActivationPredictionKey()
+						);
+					}
+					return;
+				}
+			}
+		}
+		else if (AbilitySpec.GetDynamicSpecSourceTags().HasTagExact(InputTag))
+		{
+			// Activate the spell
 			AbilitySpecInputPressed(AbilitySpec);
 			if (AbilitySpec.IsActive())
 			{

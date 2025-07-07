@@ -74,6 +74,7 @@ public:
 	FGameplayTag Abilities_Status_Eligible;
 	FGameplayTag Abilities_Status_Unlocked;
 	FGameplayTag Abilities_Status_Equipped;
+	FGameplayTag Abilities_Status_WaitingExecution;
 	FGameplayTag Abilities_Type_None;
 	FGameplayTag Abilities_Type_Offensive;
 	FGameplayTag Abilities_Type_Passive;

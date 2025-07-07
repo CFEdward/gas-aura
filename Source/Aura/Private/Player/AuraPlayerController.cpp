@@ -174,8 +174,12 @@ void AAuraPlayerController::AbilityInputTagPressed(FGameplayTag InputTag)
 void AAuraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 {
 	if (GetASC() && GetASC()->HasMatchingGameplayTag(FAuraGameplayTags::Get().Player_Block_InputReleased)) return;
+
+	const FAuraGameplayTags& GameplayTags = FAuraGameplayTags::Get();
+	const bool bIsAction = InputTag.MatchesTagExact(GameplayTags.InputTag_LMB);
+	const bool bIsWaiting = GetASC()->HasMatchingGameplayTag(GameplayTags.Abilities_Status_WaitingExecution);
 	
-	if (!InputTag.MatchesTagExact(FAuraGameplayTags::Get().InputTag_LMB))
+	if (!bIsAction)
 	{
 		if (GetASC()) GetASC()->AbilityInputTagReleased(InputTag);
 		return;
@@ -183,7 +187,7 @@ void AAuraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 
 	if (GetASC()) GetASC()->AbilityInputTagReleased(InputTag);
 	
-	if (!bTargeting && !bShiftKeyDown && GetASC() && !GetASC()->HasMatchingGameplayTag(FAuraGameplayTags::Get().Player_Block_InputPressed))
+	if (!bIsWaiting && !bTargeting && !bShiftKeyDown && GetASC() && !GetASC()->HasMatchingGameplayTag(FAuraGameplayTags::Get().Player_Block_InputPressed))
 	{
 		if (const APawn* ControlledPawn = GetPawn(); FollowTime <= ShortPressThreshold && ControlledPawn)
 		{
@@ -239,18 +243,18 @@ void AAuraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 void AAuraPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
 {
 	if (GetASC() && GetASC()->HasMatchingGameplayTag(FAuraGameplayTags::Get().Player_Block_InputHeld)) return;
+
+	const FAuraGameplayTags& GameplayTags = FAuraGameplayTags::Get();
+	const bool bIsAction = InputTag.MatchesTagExact(GameplayTags.InputTag_LMB);
+	const bool bIsWaiting = GetASC()->HasMatchingGameplayTag(GameplayTags.Abilities_Status_WaitingExecution);
 	
-	if (!InputTag.MatchesTagExact(FAuraGameplayTags::Get().InputTag_LMB))
+	if (!bIsAction)
 	{
 		if (GetASC()) GetASC()->AbilityInputTagHeld(InputTag);
 		return;
 	}
 
-	if (bTargeting || bShiftKeyDown)
-	{
-		if (GetASC()) GetASC()->AbilityInputTagHeld(InputTag);
-	}
-	else
+	if (bIsAction && !(bTargeting || bShiftKeyDown || bIsWaiting))
 	{
 		FollowTime += GetWorld()->GetDeltaSeconds();
 
@@ -277,6 +281,11 @@ void AAuraPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
 			}
 		}
 	}
+	else
+	{
+		if (GetASC()) GetASC()->AbilityInputTagHeld(InputTag);
+	}
+	//if (bTargeting || bShiftKeyDown)
 }
 
 void AAuraPlayerController::Move(const FInputActionValue& InputActionValue)

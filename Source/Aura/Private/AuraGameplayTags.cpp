@@ -321,6 +321,11 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FString("Ability Equipped Status")
 	);
 
+	GameplayTags.Abilities_Status_WaitingExecution = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Status.WaitingExecution"),
+		FString("Ability Waiting Execution Status")
+	);
+
 	GameplayTags.Abilities_Type_None = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Abilities.Type.None"),
 		FString("Ability None Type")
