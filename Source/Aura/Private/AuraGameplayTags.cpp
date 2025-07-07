@@ -296,6 +296,11 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FString("Electrocute Ability Tag")
 	);
 
+	GameplayTags.Abilities_Arcane_Shards = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Arcane.Shards"),
+		FString("Arcane Shards Ability Tag")
+	);
+
 	GameplayTags.Abilities_Status_Locked = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Abilities.Status.Locked"),
 		FString("Ability Locked Status")

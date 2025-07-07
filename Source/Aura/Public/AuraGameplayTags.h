@@ -79,6 +79,7 @@ public:
 	FGameplayTag Abilities_Type_Passive;
 	FGameplayTag Abilities_Fire_Bolt;
 	FGameplayTag Abilities_Lightning_Electrocute;
+	FGameplayTag Abilities_Arcane_Shards;
 
 	FGameplayTag Abilities_Passive;
 	FGameplayTag Abilities_Passive_HitReact;
