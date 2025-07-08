@@ -57,6 +57,8 @@ public:
 	
 	virtual void PlayerTick(float DeltaTime) override;
 
+	void SetShowMouseCursorAndForceRefresh(bool bNewValue);
+	
 	UFUNCTION(Client, Reliable)
 	void ShowDamageNumber(const float DamageAmount, ACharacter* TargetCharacter, const bool bBlockedHit, const bool bCriticalHit);
 
@@ -66,7 +68,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void ShowMagicCircle(UMaterialInterface* DecalMaterial = nullptr);
 	UFUNCTION(BlueprintCallable)
-	void HideMagicCircle();
+	void HideMagicCircle() const;
 	
 protected:
 	
@@ -159,7 +161,7 @@ private:
 	TSubclassOf<AMagicCircle> MagicCircleClass;
 	UPROPERTY()
 	TObjectPtr<AMagicCircle> MagicCircle;
-	void UpdateMagicCircleLocation();
+	void UpdateMagicCircleLocation() const;
 	
 	bool HideOccludedActor(AActor* Actor);
 	bool OnHideOccludedActor(const FCameraOccludedActor& OccludedActor) const;

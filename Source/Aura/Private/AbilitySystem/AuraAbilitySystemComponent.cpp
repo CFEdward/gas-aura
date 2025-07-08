@@ -53,7 +53,7 @@ void UAuraAbilitySystemComponent::AbilityInputTagPressed(const FGameplayTag& Inp
 		// Is an already active spell waiting for execution?
 		if (HasMatchingGameplayTag(FAuraGameplayTags::Get().Abilities_Status_WaitingExecution))
 		{
-			if (AbilitySpec.Ability->AbilityTags.HasTagExact(FAuraGameplayTags::Get().Abilities_Status_WaitingExecution) && AbilitySpec.IsActive())
+			if (AbilitySpec.Ability->GetAssetTags().HasTagExact(FAuraGameplayTags::Get().Abilities_Status_WaitingExecution) && AbilitySpec.IsActive())
 			{
 				// Execute
 				if (InputTag.MatchesTagExact(FAuraGameplayTags::Get().InputTag_LMB))

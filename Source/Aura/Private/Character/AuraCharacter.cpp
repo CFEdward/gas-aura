@@ -202,19 +202,23 @@ void AAuraCharacter::AddToSpellPoints_Implementation(int32 InSpellPoints)
 
 void AAuraCharacter::ShowMagicCircle_Implementation(UMaterialInterface* DecalMaterial)
 {
+	if (!IsLocallyControlled()) return;
+	
 	if (AAuraPlayerController* AuraPlayerController = Cast<AAuraPlayerController>(GetController()))
 	{
 		AuraPlayerController->ShowMagicCircle(DecalMaterial);
-		AuraPlayerController->bShowMouseCursor = false;
+		AuraPlayerController->SetShowMouseCursorAndForceRefresh(false);
 	}
 }
 
 void AAuraCharacter::HideMagicCircle_Implementation()
 {
+	if (!IsLocallyControlled()) return;
+	
 	if (AAuraPlayerController* AuraPlayerController = Cast<AAuraPlayerController>(GetController()))
 	{
 		AuraPlayerController->HideMagicCircle();
-		AuraPlayerController->bShowMouseCursor = true;
+		AuraPlayerController->SetShowMouseCursorAndForceRefresh(true);
 	}
 }
 
