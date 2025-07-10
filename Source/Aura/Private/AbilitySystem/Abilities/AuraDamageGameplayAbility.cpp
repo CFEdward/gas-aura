@@ -53,6 +53,13 @@ FDamageEffectParams UAuraDamageGameplayAbility::MakeDamageEffectParamsFromClassD
 		const bool bKnockback = FMath::RandRange(UE_SMALL_NUMBER, 100.f) < Params.KnockbackChance;
 		if (bKnockback) Params.KnockbackForce = ToTarget * KnockbackForceMagnitude;
 	}
+	if (bIsRadialDamage)
+	{
+		Params.bIsRadialDamage = bIsRadialDamage;
+		Params.RadialDamageOrigin = RadialDamageOrigin;
+		Params.RadialDamageInnerRadius = RadialDamageInnerRadius;
+		Params.RadialDamageOuterRadius = RadialDamageOuterRadius;
+	}
 	
 	return Params;
 }
