@@ -9,6 +9,7 @@
 #include "AbilitySystem/AuraAttributeSet.h"
 #include "AbilitySystem/Data/CharacterClassInfo.h"
 #include "Interaction/CombatInterface.h"
+#include "Kismet/GameplayStatics.h"
 
 struct AuraDamageStatics
 {
@@ -140,6 +141,7 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 	}
 
 	const FGameplayEffectSpec& Spec = ExecutionParams.GetOwningSpec();
+	FGameplayEffectContextHandle EffectContextHandle = Spec.GetContext();
 	// Gather tags from source and target
 	const FGameplayTagContainer* SourceTags = Spec.CapturedSourceTags.GetAggregatedTags();
 	const FGameplayTagContainer* TargetTags = Spec.CapturedTargetTags.GetAggregatedTags();
@@ -152,7 +154,7 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 	// Debuff
 	const bool bIsDebuff = EvaluationParameters.TargetTags->HasTag(FGameplayTag::RequestGameplayTag("Debuff"));
 	if (!bIsDebuff) DetermineDebuff(ExecutionParams, Spec, EvaluationParameters, TagsToCaptureDefs);
-
+	
 	float Damage = 0.f;
 	for (const auto& Pair : GameplayTags.DamageTypesToResistances)
 	{
@@ -169,12 +171,42 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 		Resistance = FMath::Clamp(Resistance, 0.f, 100.f);
 		
 		DamageTypeValue *= (100.f - Resistance) / 100.f;
+
+		if (UAuraAbilitySystemLibrary::IsRadialDamage(EffectContextHandle))
+		{
+			// 1. Override TakeDamage in AuraCharacterBase *
+			// 2. Create delegate OnDamage, broadcast damage received in TakeDamage *
+			// 3. Bind lambda OnDamage on the Victim here *
+			// 4. Call ApplyRadialDamageWithFalloff to cause damage (this will result in TakeDamage being called on the Victim)
+			// 5. In Lambda, set DamageTypeValue to the damage received from the broadcast *
+
+			if (ICombatInterface* CombatInterface = Cast<ICombatInterface>(TargetAvatar))
+			{
+				CombatInterface->GetOnDamage().AddLambda([&](const float DamageAmount)
+					{
+						DamageTypeValue = DamageAmount;
+					}
+				);
+			}
+			UGameplayStatics::ApplyRadialDamageWithFalloff(
+				TargetAvatar,
+				DamageTypeValue,
+				0.f,
+				UAuraAbilitySystemLibrary::GetRadialDamageOrigin(EffectContextHandle),
+				UAuraAbilitySystemLibrary::GetRadialDamageInnerRadius(EffectContextHandle),
+				UAuraAbilitySystemLibrary::GetRadialDamageOuterRadius(EffectContextHandle),
+				1.f,
+				UDamageType::StaticClass(),
+				TArray<AActor*>(),
+				SourceAvatar,
+				nullptr
+			);
+		}
 		
 		// Get Damage Set by Caller Magnitude
 		Damage += DamageTypeValue;
 	}
 	
-	FGameplayEffectContextHandle EffectContextHandle = Spec.GetContext();
 	if (!bIsDebuff)
 	{
 		// Capture BlockChance on Target and determine if there was a successful Block

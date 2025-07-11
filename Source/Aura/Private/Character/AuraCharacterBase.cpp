@@ -60,6 +60,14 @@ void AAuraCharacterBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& O
 	DOREPLIFETIME(AAuraCharacterBase, bIsBeingShocked);
 }
 
+float AAuraCharacterBase::TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser)
+{
+	const float DamageTaken = Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
+	OnDamage.Broadcast(DamageTaken);
+
+	return DamageTaken;
+}
+
 void AAuraCharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
@@ -214,6 +222,11 @@ FOnDeath& AAuraCharacterBase::GetOnDeathDelegate()
 USkeletalMeshComponent* AAuraCharacterBase::GetWeapon_Implementation()
 {
 	return Weapon;
+}
+
+FOnDamage& AAuraCharacterBase::GetOnDamage()
+{
+	return OnDamage;
 }
 
 void AAuraCharacterBase::Dissolve()

@@ -12,6 +12,7 @@ class UAbilitySystemComponent;
 enum class ECharacterClass : uint8;
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnASCRegistered, UAbilitySystemComponent*);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnDamage, float /*DamageAmount*/);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDeath, AActor*, DeadActor);
 
 USTRUCT(BlueprintType)
@@ -37,14 +38,9 @@ class UCombatInterface : public UInterface
 	GENERATED_BODY()
 };
 
-/**
- * 
- */
 class AURA_API ICombatInterface
 {
 	GENERATED_BODY()
-
-	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 	
 public:
 
@@ -97,6 +93,8 @@ public:
 	
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	USkeletalMeshComponent* GetWeapon();
+
+	virtual FOnDamage& GetOnDamage() = 0;
 
 	FORCEINLINE virtual float GetHalfHeight() const { return 0.f; }
 };

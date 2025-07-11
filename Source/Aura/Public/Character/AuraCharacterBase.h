@@ -28,6 +28,8 @@ public:
 	AAuraCharacterBase();
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+	virtual float TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 	
 	/** AbilitySystem Interface */
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
@@ -51,12 +53,14 @@ public:
 	virtual void SetIsBeingShocked_Implementation(const bool bInShock) override;
 	virtual bool IsBeingShocked_Implementation() const override;
 	virtual USkeletalMeshComponent* GetWeapon_Implementation() override;
+	virtual FOnDamage& GetOnDamage() override;
 	FORCEINLINE virtual float GetHalfHeight() const override { return GetCapsuleComponent()->GetScaledCapsuleHalfHeight(); }
     /** end Combat Interface */
 	
 	FOnASCRegistered OnAscRegistered;
 	UPROPERTY(BlueprintAssignable)
 	FOnDeath OnDeath;
+	FOnDamage OnDamage;
 	
 	UFUNCTION(NetMulticast, Reliable)
 	virtual void MulticastHandleDeath(const FVector& DeathImpulse);
