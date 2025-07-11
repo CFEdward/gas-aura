@@ -12,7 +12,6 @@ class UAbilitySystemComponent;
 enum class ECharacterClass : uint8;
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnASCRegistered, UAbilitySystemComponent*);
-DECLARE_MULTICAST_DELEGATE_OneParam(FOnDamage, float /*DamageAmount*/);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDeath, AActor*, DeadActor);
 
 USTRUCT(BlueprintType)
@@ -93,8 +92,6 @@ public:
 	
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	USkeletalMeshComponent* GetWeapon();
-
-	virtual FOnDamage& GetOnDamage() = 0;
 
 	FORCEINLINE virtual float GetHalfHeight() const { return 0.f; }
 };

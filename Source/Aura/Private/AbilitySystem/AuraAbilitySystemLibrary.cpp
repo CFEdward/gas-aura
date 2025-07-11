@@ -540,3 +540,22 @@ TArray<FVector> UAuraAbilitySystemLibrary::EvenlyRotatedVectors(const FVector& F
 
 	return Vectors;
 }
+
+float UAuraAbilitySystemLibrary::GetRadialDamageWithFalloffForTarget(FVector& TargetLocation, const FGameplayEffectContextHandle& EffectContextHandle, const float BaseDamage, const FVector& Origin, const float DamageInnerRadius, const float DamageOuterRadius)
+{
+	TargetLocation.Z = Origin.Z;	// TargetAvatar half height may be above the InnerRadius
+
+	const float SquareDistance = FVector::DistSquared(TargetLocation, Origin);
+	
+	const float SquareInnerRadius = FMath::Square(DamageInnerRadius);
+	const float SquareOuterRadius = FMath::Square(DamageOuterRadius);
+
+	if (SquareDistance <= SquareInnerRadius) return BaseDamage;
+
+	const TRange<float> DistanceRange(SquareInnerRadius, SquareOuterRadius);
+	const TRange<float> DamageScaleRange(1.f, 0.f);
+	const float DamageScale = FMath::GetMappedRangeValueClamped(DistanceRange, DamageScaleRange, SquareDistance);
+	const float RadialDamage = BaseDamage * DamageScale;
+
+	return RadialDamage;
+}

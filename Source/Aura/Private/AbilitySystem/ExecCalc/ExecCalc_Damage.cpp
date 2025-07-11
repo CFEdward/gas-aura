@@ -165,6 +165,7 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 		const FGameplayEffectAttributeCaptureDefinition CaptureDef = TagsToCaptureDefs[ResistanceTag];
 
 		float DamageTypeValue = Spec.GetSetByCallerMagnitude(DamageTypeTag, false);
+		if (DamageTypeValue <= 0.f) continue;
 		
 		float Resistance = 0.f;
 		ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(CaptureDef, EvaluationParameters, Resistance);
@@ -174,32 +175,14 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 
 		if (UAuraAbilitySystemLibrary::IsRadialDamage(EffectContextHandle))
 		{
-			// 1. Override TakeDamage in AuraCharacterBase *
-			// 2. Create delegate OnDamage, broadcast damage received in TakeDamage *
-			// 3. Bind lambda OnDamage on the Victim here *
-			// 4. Call ApplyRadialDamageWithFalloff to cause damage (this will result in TakeDamage being called on the Victim)
-			// 5. In Lambda, set DamageTypeValue to the damage received from the broadcast *
-
-			if (ICombatInterface* CombatInterface = Cast<ICombatInterface>(TargetAvatar))
-			{
-				CombatInterface->GetOnDamage().AddLambda([&](const float DamageAmount)
-					{
-						DamageTypeValue = DamageAmount;
-					}
-				);
-			}
-			UGameplayStatics::ApplyRadialDamageWithFalloff(
-				TargetAvatar,
+			FVector TargetLocation = TargetAvatar->GetActorLocation();
+			DamageTypeValue = UAuraAbilitySystemLibrary::GetRadialDamageWithFalloffForTarget(
+				TargetLocation,
+				EffectContextHandle,
 				DamageTypeValue,
-				0.f,
 				UAuraAbilitySystemLibrary::GetRadialDamageOrigin(EffectContextHandle),
 				UAuraAbilitySystemLibrary::GetRadialDamageInnerRadius(EffectContextHandle),
-				UAuraAbilitySystemLibrary::GetRadialDamageOuterRadius(EffectContextHandle),
-				1.f,
-				UDamageType::StaticClass(),
-				TArray<AActor*>(),
-				SourceAvatar,
-				nullptr
+				UAuraAbilitySystemLibrary::GetRadialDamageOuterRadius(EffectContextHandle)
 			);
 		}
 		
