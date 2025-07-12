@@ -32,8 +32,7 @@ void UWaitCooldownChange::CooldownTagChanged(const FGameplayTag InCooldownTag, i
 	}
 }
 
-void UWaitCooldownChange::OnActiveEffectAdded(UAbilitySystemComponent* TargetASC,
-	const FGameplayEffectSpec& SpecApplied, FActiveGameplayEffectHandle ActiveGameplayEffect)
+void UWaitCooldownChange::OnActiveEffectAdded(UAbilitySystemComponent* TargetASC, const FGameplayEffectSpec& SpecApplied, FActiveGameplayEffectHandle ActiveGameplayEffect)
 {
 	const bool bIsReplicatedEffect = !SpecApplied.GetContext().GetAbilityInstance_NotReplicated();
 	if (bIsReplicatedEffect) return;
