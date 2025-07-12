@@ -45,13 +45,10 @@ FDamageEffectParams UAuraDamageGameplayAbility::MakeDamageEffectParamsFromClassD
 	
 	if (IsValid(TargetActor))
 	{
-		FRotator Rotation = (TargetActor->GetActorLocation() - GetAvatarActorFromActorInfo()->GetActorLocation()).Rotation();
-		Rotation.Pitch = 45.f;
-		const FVector ToTarget = Rotation.Vector();
-		Params.DeathImpulse = ToTarget * DeathImpulseMagnitude;
+		const bool bKnockback = FMath::RandRange(UE_SMALL_NUMBER, 100.f) < KnockbackChance;
+		if (bKnockback) Params.KnockbackForce = GetImpulse(TargetActor) * KnockbackForceMagnitude;
 
-		const bool bKnockback = FMath::RandRange(UE_SMALL_NUMBER, 100.f) < Params.KnockbackChance;
-		if (bKnockback) Params.KnockbackForce = ToTarget * KnockbackForceMagnitude;
+		Params.DeathImpulse = GetImpulse(TargetActor) * DeathImpulseMagnitude;
 	}
 	if (bIsRadialDamage)
 	{
@@ -73,4 +70,16 @@ FTaggedMontage UAuraDamageGameplayAbility::GetRandomTaggedMontageFromArray(const
 	}
 
 	return FTaggedMontage();
+}
+
+FVector UAuraDamageGameplayAbility::GetImpulse(const AActor* TargetActor, const bool bOverrideDirection, const FVector& OverrideDirection, const float PitchOverride) const
+{
+	FVector Direction = TargetActor->GetActorLocation() - GetAvatarActorFromActorInfo()->GetActorLocation();	// default
+	Direction = bOverrideDirection ? OverrideDirection : Direction;
+
+	Direction.Z = 0.f;
+	Direction.Normalize();
+	const FVector ToTarget = Direction + FVector::UpVector * FMath::Sin(FMath::DegreesToRadians(PitchOverride));
+
+	return ToTarget;
 }

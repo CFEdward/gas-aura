@@ -30,6 +30,12 @@ public:
 	
 protected:
 
+	UFUNCTION(BlueprintPure)
+	FTaggedMontage GetRandomTaggedMontageFromArray(const TArray<FTaggedMontage>& TaggedMontages) const;
+
+	UFUNCTION(BlueprintPure)
+	FVector GetImpulse(const AActor* TargetActor, const bool bOverrideDirection = false, const FVector& OverrideDirection = FVector::ZeroVector, const float PitchOverride = 45.f) const;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TSubclassOf<UGameplayEffect> DamageEffectClass;
 	UPROPERTY(EditDefaultsOnly, Category = "Damage", meta = (Categories = "Damage"))
@@ -46,10 +52,10 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Damage")
 	float DebuffDuration = 5.f;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Damage")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Damage")
 	float DeathImpulseMagnitude = 1000.f;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Damage")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Damage")
 	float KnockbackForceMagnitude = 1000.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Damage")
 	float KnockbackChance = 0.f;
@@ -62,7 +68,4 @@ protected:
 	float RadialDamageOuterRadius = 0.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Damage")
 	FVector RadialDamageOrigin = FVector::ZeroVector;
-	
-	UFUNCTION(BlueprintPure)
-	FTaggedMontage GetRandomTaggedMontageFromArray(const TArray<FTaggedMontage>& TaggedMontages) const;
 };
