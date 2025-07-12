@@ -94,7 +94,7 @@ public:
 	void SetDebuffDamage(const float InDebuffDamage) { DebuffDamage = InDebuffDamage; }
 	void SetDebuffDuration(const float InDebuffDuration) { DebuffDuration = InDebuffDuration; }
 	void SetDebuffFrequency(const float InDebuffFrequency) { DebuffFrequency = InDebuffFrequency; }
-	void SetDamageType(TSharedPtr<FGameplayTag> InDamageType) { DamageType = InDamageType; }
+	void SetDamageType(const TSharedPtr<FGameplayTag>& InDamageType) { DamageType = InDamageType; }
 	void SetDeathImpulse(const FVector& InImpulse) { DeathImpulse = InImpulse; }
 	void SetKnockbackForce(const FVector& InForce) { KnockbackForce = InForce; }
 	void SetIsRadialDamage(const bool bInIsRadialDamage) { bIsRadialDamage = bInIsRadialDamage; }
