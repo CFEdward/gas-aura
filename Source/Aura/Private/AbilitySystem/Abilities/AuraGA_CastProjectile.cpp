@@ -7,16 +7,12 @@
 #include "Actor/AuraProjectile.h"
 #include "Interaction/CombatInterface.h"
 
-void UAuraGA_CastProjectile::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
-                                             const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
-                                             const FGameplayEventData* TriggerEventData)
+void UAuraGA_CastProjectile::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
-	
 }
 
-void UAuraGA_CastProjectile::SpawnProjectile(const FVector& ProjectileTargetLocation,
-	const FGameplayTag& SocketTag, const bool bOverridePitch, const float PitchOverride)
+void UAuraGA_CastProjectile::SpawnProjectile(const FVector& ProjectileTargetLocation, const FGameplayTag& SocketTag, const bool bOverridePitch, const float PitchOverride)
 {
 	const bool bIsServer = GetAvatarActorFromActorInfo()->HasAuthority();
 	if (!bIsServer) return;

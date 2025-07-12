@@ -7,6 +7,11 @@
 #include "GameFramework/Character.h"
 #include "Kismet/KismetSystemLibrary.h"
 
+UAuraGA_CastBeam::UAuraGA_CastBeam()
+{
+	MaxNumSubSpell = 5;
+}
+
 bool UAuraGA_CastBeam::StoreMouseDataInfo(const FHitResult& HitResult)
 {
 	if (HitResult.bBlockingHit)
@@ -91,8 +96,8 @@ void UAuraGA_CastBeam::StoreAdditionalTargets(TArray<AActor*>& OutAdditionalTarg
 		}
 	}
 
-	const int32 NumAdditionalTargets = FMath::Min(GetAbilityLevel() - 1, MaxNumShockTargets);
-	//const int32 NumAdditionalTargets = MaxNumShockTargets;
+	const int32 NumAdditionalTargets = FMath::Min(GetAbilityLevel() - 1, MaxNumSubSpell);
+	//const int32 NumAdditionalTargets = MaxNumSubSpell;
 
 	UAuraAbilitySystemLibrary::GetClosestTargets(
 		NumAdditionalTargets,

@@ -6,15 +6,14 @@
 #include "AbilitySystem/Abilities/AuraDamageGameplayAbility.h"
 #include "AuraGA_CastBeam.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class AURA_API UAuraGA_CastBeam : public UAuraDamageGameplayAbility
 {
 	GENERATED_BODY()
 
 public:
+
+	UAuraGA_CastBeam();
 
 	UFUNCTION(BlueprintCallable)
 	bool StoreMouseDataInfo(const FHitResult& HitResult);
@@ -36,12 +35,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void RemoveOnDeathBindingFromAdditionalTarget(AActor* AdditionalActor);
 
-	int32 GetMaxNumShockTargets() const { return MaxNumShockTargets; }
+	//int32 GetMaxNumShockTargets() const { return MaxNumShockTargets; }
 	
 protected:
 
 	UPROPERTY(BlueprintReadWrite, Category = "Beam")
-	FVector MouseHitLocation;
+	FVector MouseHitLocation = FVector::ZeroVector;
 	UPROPERTY(BlueprintReadWrite, Category = "Beam")
 	TObjectPtr<AActor> MouseHitActor;
 
@@ -50,6 +49,6 @@ protected:
 	UPROPERTY(BlueprintReadWrite, Category = "Beam")
 	TObjectPtr<APlayerController> OwnerPlayerController;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Beam")
-	int32 MaxNumShockTargets = 5;
+	//UPROPERTY(EditDefaultsOnly, Category = "Beam")
+	//int32 MaxNumShockTargets = 5;
 };

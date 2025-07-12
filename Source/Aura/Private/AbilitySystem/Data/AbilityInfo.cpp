@@ -48,6 +48,7 @@ FString UAbilityInfo::FormatTextValues(const FGameplayTag& AbilityTag, const int
 			NamesToValues.Add(TEXT("_LightningDmg"), FStringFormatArg(FMath::RoundToInt32(AuraDamageGA->GetDamageAtLevel(Tags.Damage_Lightning, Level))));
 			NamesToValues.Add(TEXT("_ArcDmg"), FStringFormatArg(FMath::RoundToInt32(AuraDamageGA->GetDamageAtLevel(Tags.Damage_Arcane, Level))));
 			NamesToValues.Add(TEXT("_PhysDmg"), FStringFormatArg(FMath::RoundToInt32(AuraDamageGA->GetDamageAtLevel(Tags.Damage_Physical, Level))));
+			NamesToValues.Add(TEXT("_SubSpellNum"), FStringFormatArg(FMath::Min(Level, AuraDamageGA->GetMaxNumSubSpell())));
 		}
 
 		if (const UAuraGA_CastProjectile* AuraProjectileSpell = static_cast<UAuraGA_CastProjectile*>(AbilityDefault))
@@ -56,7 +57,7 @@ FString UAbilityInfo::FormatTextValues(const FGameplayTag& AbilityTag, const int
 		}
 		if (const UAuraGA_CastBeam* AuraBeamSpell = static_cast<UAuraGA_CastBeam*>(AbilityDefault))
 		{
-			NamesToValues.Add(TEXT("_BeamNum"), FStringFormatArg(FMath::Min(Level - 1, AuraBeamSpell->GetMaxNumShockTargets())));
+			NamesToValues.Add(TEXT("_BeamNum"), FStringFormatArg(FMath::Min(Level - 1, AuraBeamSpell->GetMaxNumSubSpell())));
 		}
 	}
 

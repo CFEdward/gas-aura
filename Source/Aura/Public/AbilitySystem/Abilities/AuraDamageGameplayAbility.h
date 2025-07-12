@@ -8,9 +8,6 @@
 #include "Interaction/CombatInterface.h"
 #include "AuraDamageGameplayAbility.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class AURA_API UAuraDamageGameplayAbility : public UAuraGameplayAbility
 {
@@ -24,6 +21,7 @@ public:
 	float GetDamageAtLevel(const FGameplayTag& DmgType, const float InLevel = 1.f) const;
 	UFUNCTION(BlueprintPure)
 	float GetDamageAtCurrentLevel() const;
+	int32 GetMaxNumSubSpell() const { return MaxNumSubSpell; }
 
 	UFUNCTION(BlueprintPure)
 	FDamageEffectParams MakeDamageEffectParamsFromClassDefaults(AActor* TargetActor = nullptr) const;
@@ -68,4 +66,7 @@ protected:
 	float RadialDamageOuterRadius = 0.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Damage")
 	FVector RadialDamageOrigin = FVector::ZeroVector;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Damage")
+	int32 MaxNumSubSpell = 0;
 };
