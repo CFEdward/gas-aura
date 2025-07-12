@@ -6,9 +6,6 @@
 #include "GameplayModMagnitudeCalculation.h"
 #include "MMC_PlayerAbilityCooldown.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class AURA_API UMMC_PlayerAbilityCooldown : public UGameplayModMagnitudeCalculation
 {
