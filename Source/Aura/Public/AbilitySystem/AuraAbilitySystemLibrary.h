@@ -156,4 +156,17 @@ public:
 	static float GetRadialDamageWithFalloffForTarget(UPARAM(ref) FVector& TargetLocation, const FGameplayEffectContextHandle& EffectContextHandle, const float BaseDamage, const FVector& Origin, const float DamageInnerRadius, const float DamageOuterRadius);
 
 	static int32 GetXPRewardForClassAndLevel(const UObject* WorldContextObject, ECharacterClass CharacterClass, int32 CharacterLevel);
+
+	/*
+	 * Damage Effect Params
+	 */
+
+	UFUNCTION(BlueprintCallable, Category = "AuraAbilitySystemLibrary|DamageEffect")
+	static void SetIsRadialDamageEffectParam(UPARAM(ref) FDamageEffectParams& DamageEffectParams, const bool bIsRadial, const float InnerRadius, const float OuterRadius, const FVector& Origin);
+
+	UFUNCTION(BlueprintCallable, Category = "AuraAbilitySystemLibrary|DamageEffect")
+	static void SetKnockbackDirection(UPARAM(ref) FDamageEffectParams& DamageEffectParams, FVector KnockbackDirection, const float MagnitudeOverride = 0.f);
+
+	UFUNCTION(BlueprintCallable, Category = "AuraAbilitySystemLibrary|DamageEffect")
+	static void SetDeathDirection(UPARAM(ref) FDamageEffectParams& DamageEffectParams, FVector DeathDirection, const float MagnitudeOverride = 0.f);
 };

@@ -31,11 +31,12 @@ TArray<AAuraFireBall*> UAuraGA_FireBlast::SpawnFireBalls()
 		AAuraFireBall* FireBall = GetWorld()->SpawnActorDeferred<AAuraFireBall>(
 			FireBallClass,
 			SpawnTransform,
-			GetOwningActorFromActorInfo(),
+			GetAvatarActorFromActorInfo(),
 			CurrentActorInfo->PlayerController->GetPawn(),
 			ESpawnActorCollisionHandlingMethod::AlwaysSpawn
 		);
 		FireBall->DamageEffectParams = MakeDamageEffectParamsFromClassDefaults();
+		FireBall->ExplosionDamageParams = MakeDamageEffectParamsFromClassDefaults();
 
 		FireBalls.Add(FireBall);
 		FireBall->FinishSpawning(SpawnTransform);

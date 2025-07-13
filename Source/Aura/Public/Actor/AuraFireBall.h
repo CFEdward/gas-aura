@@ -18,6 +18,9 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void StartOutgoingTimeline();
 	
+	UPROPERTY(BlueprintReadWrite)
+	FDamageEffectParams ExplosionDamageParams;
+	
 protected:
 	
 	virtual void BeginPlay() override;
