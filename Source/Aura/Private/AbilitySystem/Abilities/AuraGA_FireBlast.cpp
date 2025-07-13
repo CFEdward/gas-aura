@@ -13,6 +13,9 @@ UAuraGA_FireBlast::UAuraGA_FireBlast()
 
 TArray<AAuraFireBall*> UAuraGA_FireBlast::SpawnFireBalls()
 {
+	const bool bIsServer = GetAvatarActorFromActorInfo()->HasAuthority();
+	if (!bIsServer) return TArray<AAuraFireBall*>();
+	
 	checkf(FireBallClass, TEXT("No FireBall class selected!"));
 	
 	TArray<AAuraFireBall*> FireBalls;

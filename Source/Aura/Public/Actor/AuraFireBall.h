@@ -15,6 +15,9 @@ public:
 	
 	AAuraFireBall();
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void StartOutgoingTimeline();
+	
 protected:
 	
 	virtual void BeginPlay() override;
