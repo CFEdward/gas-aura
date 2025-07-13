@@ -101,6 +101,8 @@ public:
 	FGameplayTag Montage_Attack_3;
 	FGameplayTag Montage_Attack_4;
 
+	FGameplayTag GameplayCue_FireBlast;
+
 	TMap<FGameplayTag, FGameplayTag> DamageTypesToResistances;
 	TMap<FGameplayTag, FGameplayTag> DamageTypesToDebuffs;
 

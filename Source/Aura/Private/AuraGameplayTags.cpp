@@ -442,6 +442,15 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	);
 
 	/*
+	 * Gameplay Cues
+	 */
+
+	GameplayTags.GameplayCue_FireBlast = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("GameplayCue.FireBlast"),
+		FString("Gameplay Cue for FireBlast")
+	);
+
+	/*
 	 * Map of Damage Types to Resistances
 	 */
 
