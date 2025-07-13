@@ -38,4 +38,7 @@ protected:
 
 	void CooldownTagChanged(const FGameplayTag InCooldownTag, int32 NewCount);
 	void OnActiveEffectAdded(UAbilitySystemComponent* TargetASC, const FGameplayEffectSpec& SpecApplied, FActiveGameplayEffectHandle ActiveGameplayEffect);
+
+	UFUNCTION(BlueprintCallable)
+	void CheckRemainingCooldownTime();
 };
