@@ -19,6 +19,12 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FSetWidgetSwitcherIndex SetWidgetSwitcherIndex;
+	
+	UPROPERTY()
+	int32 SlotIndex;
+	
+	UPROPERTY()
+	FString PlayerName;
 
 	/** Field Notifies */
 	//UFUNCTION(BlueprintSetter)

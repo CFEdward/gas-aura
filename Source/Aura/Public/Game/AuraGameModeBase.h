@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright Eduard Ciofu
 
 #pragma once
 
@@ -6,9 +6,9 @@
 #include "GameFramework/GameModeBase.h"
 #include "AuraGameModeBase.generated.h"
 
-/**
- * 
- */
+class USaveGame;
+class UVM_LoadSlot;
+
 UCLASS()
 class AURA_API AAuraGameModeBase : public AGameModeBase
 {
@@ -16,5 +16,8 @@ class AURA_API AAuraGameModeBase : public AGameModeBase
 
 public:
 	
-	
+	void SaveSlotData(UVM_LoadSlot* LoadSlot, const int32 SlotIndex);
+
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<USaveGame> LoadMenuSaveGameClass;
 };

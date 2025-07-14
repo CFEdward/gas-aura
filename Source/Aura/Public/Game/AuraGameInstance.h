@@ -9,9 +9,6 @@
 class UAbilityInfo;
 class UCharacterClassInfo;
 
-/**
- * 
- */
 UCLASS()
 class AURA_API UAuraGameInstance : public UGameInstance
 {
