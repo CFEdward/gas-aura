@@ -7,8 +7,31 @@
 
 #include "VM_LoadMenu.generated.h"
 
+class UVM_LoadSlot;
+
 UCLASS()
 class AURA_API UVM_LoadMenu : public UMVVMViewModelBase
 {
 	GENERATED_BODY()
+
+public:
+
+	void InitializeLoadSlots();
+	
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UVM_LoadSlot> LoadSlotVMClass;
+
+	UFUNCTION(BlueprintPure)
+	UVM_LoadSlot* GetLoadSlotVMByIndex(const int32 Index) const;
+
+private:
+
+	UPROPERTY()
+	TMap<int32, TObjectPtr<UVM_LoadSlot>> LoadSlots;
+	UPROPERTY()
+	TObjectPtr<UVM_LoadSlot> LoadSlot_0;
+	UPROPERTY()
+	TObjectPtr<UVM_LoadSlot> LoadSlot_1;
+	UPROPERTY()
+	TObjectPtr<UVM_LoadSlot> LoadSlot_2;
 };
