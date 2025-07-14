@@ -14,9 +14,6 @@ struct FWidgetControllerParams;
 class UOverlayWidgetController;
 class UAuraUserWidget;
 
-/**
- * 
- */
 UCLASS()
 class AURA_API AAuraHUD : public AHUD
 {
