@@ -15,6 +15,21 @@ void UVM_LoadMenu::InitializeLoadSlots()
 	LoadSlots.Add(2, LoadSlot_2);
 }
 
+void UVM_LoadMenu::NewSlotButtonPressed(const int32 Slot, const FString& EnteredName)
+{
+	
+}
+
+void UVM_LoadMenu::NewGameButtonPressed(const int32 Slot)
+{
+	LoadSlots[Slot]->SetWidgetSwitcherIndex.Broadcast(1);
+}
+
+void UVM_LoadMenu::SelectSlotButtonPressed(const int32 Slot)
+{
+	
+}
+
 UVM_LoadSlot* UVM_LoadMenu::GetLoadSlotVMByIndex(const int32 Index) const
 {
 	return LoadSlots.FindChecked(Index);
