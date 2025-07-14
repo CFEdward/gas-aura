@@ -2,3 +2,16 @@
 
 
 #include "UI/HUD/LoadMenuHUD.h"
+
+#include "UI/ViewModel/VM_LoadMenu.h"
+#include "UI/Widget/LoadMenuWidget.h"
+
+void ALoadMenuHUD::BeginPlay()
+{
+	Super::BeginPlay();
+
+	LoadMenuVM = NewObject<UVM_LoadMenu>(this, LoadMenuVMClass);
+
+	LoadMenuWidget = CreateWidget<ULoadMenuWidget>(GetWorld(), LoadMenuWidgetClass);
+	LoadMenuWidget->AddToViewport();
+}
