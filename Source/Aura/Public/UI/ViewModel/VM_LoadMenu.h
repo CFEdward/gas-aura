@@ -17,9 +17,6 @@ class AURA_API UVM_LoadMenu : public UMVVMViewModelBase
 public:
 
 	void InitializeLoadSlots();
-	
-	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<UVM_LoadSlot> LoadSlotVMClass;
 
 	UFUNCTION(BlueprintCallable)
 	void NewSlotButtonPressed(const int32 Slot);
@@ -27,6 +24,11 @@ public:
 	void NewGameButtonPressed(const int32 Slot);
 	UFUNCTION(BlueprintCallable)
 	void SelectSlotButtonPressed(const int32 Slot);
+
+	void LoadData();
+	
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UVM_LoadSlot> LoadSlotVMClass;
 	
 	UFUNCTION(BlueprintPure)
 	UVM_LoadSlot* GetLoadSlotVMByIndex(const int32 Index) const;

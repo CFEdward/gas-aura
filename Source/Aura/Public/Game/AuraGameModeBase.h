@@ -6,6 +6,7 @@
 #include "GameFramework/GameModeBase.h"
 #include "AuraGameModeBase.generated.h"
 
+class ULoadMenuSaveGame;
 class USaveGame;
 class UVM_LoadSlot;
 
@@ -16,7 +17,8 @@ class AURA_API AAuraGameModeBase : public AGameModeBase
 
 public:
 	
-	void SaveSlotData(UVM_LoadSlot* LoadSlot, const int32 SlotIndex);
+	void SaveSlotData(const UVM_LoadSlot* LoadSlot, const int32 SlotIndex) const;
+	ULoadMenuSaveGame* GetSaveSlotData(const FString& SlotName, const int32 SlotIndex) const;
 
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<USaveGame> LoadMenuSaveGameClass;

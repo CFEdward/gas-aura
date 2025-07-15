@@ -3,10 +3,10 @@
 
 #include "UI/ViewModel/VM_LoadSlot.h"
 
-void UVM_LoadSlot::InitializeSlot()
+void UVM_LoadSlot::InitializeSlot() const
 {
-	// TODO: Check slot status based on loaded data
-	SetWidgetSwitcherIndex.Broadcast(2);
+	const int32 WidgetSwitcherIndex = SlotStatus.GetValue();
+	SetWidgetSwitcherIndex.Broadcast(WidgetSwitcherIndex);
 }
 
 void UVM_LoadSlot::SetLoadSlotName(const FString& InLoadSlotName)

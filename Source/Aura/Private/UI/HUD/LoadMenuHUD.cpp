@@ -16,4 +16,6 @@ void ALoadMenuHUD::BeginPlay()
 	LoadMenuWidget = CreateWidget<ULoadMenuWidget>(GetWorld(), LoadMenuWidgetClass);
 	LoadMenuWidget->AddToViewport();
 	LoadMenuWidget->BlueprintInitializeWidget();
+
+	LoadMenuVM->LoadData();
 }

@@ -6,6 +6,7 @@
 #include "MVVMViewModelBase.h"
 #include "VM_LoadSlot.generated.h"
 
+enum ESaveSlotStatus : uint8;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FSetWidgetSwitcherIndex, int32, WidgetSwitcherIndex);
 
 UCLASS()
@@ -15,13 +16,16 @@ class AURA_API UVM_LoadSlot : public UMVVMViewModelBase
 
 public:
 
-	void InitializeSlot();
+	void InitializeSlot() const;
 
 	UPROPERTY(BlueprintAssignable)
 	FSetWidgetSwitcherIndex SetWidgetSwitcherIndex;
 	
 	UPROPERTY()
 	int32 SlotIndex;
+
+	UPROPERTY()
+	TEnumAsByte<ESaveSlotStatus> SlotStatus;
 	
 	/** Field Notifies */
 	
