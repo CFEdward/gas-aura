@@ -13,3 +13,8 @@ void UVM_LoadSlot::SetLoadSlotName(const FString& InLoadSlotName)
 {
 	UE_MVVM_SET_PROPERTY_VALUE(LoadSlotName, InLoadSlotName);
 }
+
+void UVM_LoadSlot::SetPlayerName(const FText& InPlayerName)
+{
+	UE_MVVM_SET_PROPERTY_VALUE(PlayerName, InPlayerName);
+}

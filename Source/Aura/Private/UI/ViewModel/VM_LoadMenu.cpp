@@ -20,11 +20,9 @@ void UVM_LoadMenu::InitializeLoadSlots()
 	LoadSlots.Add(2, LoadSlot_2);
 }
 
-void UVM_LoadMenu::NewSlotButtonPressed(const int32 Slot, const FString& EnteredName)
+void UVM_LoadMenu::NewSlotButtonPressed(const int32 Slot)
 {
 	AAuraGameModeBase* AuraGameMode = Cast<AAuraGameModeBase>(UGameplayStatics::GetGameMode(this));
-
-	LoadSlots[Slot]->PlayerName = EnteredName;
 
 	AuraGameMode->SaveSlotData(LoadSlots[Slot], Slot);
 	LoadSlots[Slot]->InitializeSlot();

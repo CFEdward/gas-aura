@@ -15,7 +15,7 @@ void AAuraGameModeBase::SaveSlotData(UVM_LoadSlot* LoadSlot, const int32 SlotInd
 	}
 	USaveGame* SaveGameObject = UGameplayStatics::CreateSaveGameObject(LoadMenuSaveGameClass);
 	ULoadMenuSaveGame* LoadMenuSaveGame = Cast<ULoadMenuSaveGame>(SaveGameObject);
-	LoadMenuSaveGame->PlayerName = LoadSlot->PlayerName;
+	LoadMenuSaveGame->PlayerName = LoadSlot->GetPlayerName().ToString();
 
 	UGameplayStatics::SaveGameToSlot(LoadMenuSaveGame, LoadSlot->GetLoadSlotName(), SlotIndex);
 }

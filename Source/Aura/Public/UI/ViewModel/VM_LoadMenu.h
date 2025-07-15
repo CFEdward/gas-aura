@@ -22,7 +22,7 @@ public:
 	TSubclassOf<UVM_LoadSlot> LoadSlotVMClass;
 
 	UFUNCTION(BlueprintCallable)
-	void NewSlotButtonPressed(const int32 Slot, const FString& EnteredName);
+	void NewSlotButtonPressed(const int32 Slot);
 	UFUNCTION(BlueprintCallable)
 	void NewGameButtonPressed(const int32 Slot);
 	UFUNCTION(BlueprintCallable)
