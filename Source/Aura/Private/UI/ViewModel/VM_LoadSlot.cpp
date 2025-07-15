@@ -18,3 +18,8 @@ void UVM_LoadSlot::SetPlayerName(const FText& InPlayerName)
 {
 	UE_MVVM_SET_PROPERTY_VALUE(PlayerName, InPlayerName);
 }
+
+void UVM_LoadSlot::SetSelectButtonIsEnabled(const bool& bInSelectButtonIsEnabled)
+{
+	UE_MVVM_SET_PROPERTY_VALUE(bSelectButtonIsEnabled, bInSelectButtonIsEnabled);
+}

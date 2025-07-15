@@ -37,7 +37,10 @@ void UVM_LoadMenu::NewGameButtonPressed(const int32 Slot)
 
 void UVM_LoadMenu::SelectSlotButtonPressed(const int32 Slot)
 {
-	
+	for (const TTuple<int32, UVM_LoadSlot*> LoadSlot : LoadSlots)
+	{
+		LoadSlot.Value->SetSelectButtonIsEnabled(LoadSlot.Key != Slot);
+	}
 }
 
 void UVM_LoadMenu::LoadData()
