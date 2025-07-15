@@ -41,6 +41,9 @@ void UVM_LoadMenu::SelectSlotButtonPressed(const int32 Slot)
 	{
 		LoadSlot.Value->SetSelectButtonIsEnabled(LoadSlot.Key != Slot);
 	}
+
+	SetPlayButtonIsEnabled(true);
+	SetDeleteButtonIsEnabled(true);
 }
 
 void UVM_LoadMenu::LoadData()

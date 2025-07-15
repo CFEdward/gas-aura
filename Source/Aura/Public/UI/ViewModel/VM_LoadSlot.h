@@ -30,9 +30,9 @@ public:
 	
 	/** Field Notifies */
 	
-	void SetLoadSlotName(const FString& InLoadSlotName);
-	void SetPlayerName(const FText& InPlayerName);
-	void SetSelectButtonIsEnabled(const bool& bInSelectButtonIsEnabled);
+	void SetLoadSlotName(const FString& InLoadSlotName) { UE_MVVM_SET_PROPERTY_VALUE(LoadSlotName, InLoadSlotName); }
+	void SetPlayerName(const FText& InPlayerName) { UE_MVVM_SET_PROPERTY_VALUE(PlayerName, InPlayerName); }
+	void SetSelectButtonIsEnabled(const bool& bInSelectButtonIsEnabled) { UE_MVVM_SET_PROPERTY_VALUE(bSelectButtonIsEnabled, bInSelectButtonIsEnabled); }
 	
 	FString GetLoadSlotName() const { return LoadSlotName; }
 	FText GetPlayerName() const { return PlayerName; }
