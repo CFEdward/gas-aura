@@ -28,6 +28,7 @@ void UVM_LoadMenu::NewSlotButtonPressed(const int32 Slot)
 {
 	const AAuraGameModeBase* AuraGameMode = Cast<AAuraGameModeBase>(UGameplayStatics::GetGameMode(this));
 	LoadSlots[Slot]->SlotStatus = Taken;
+	LoadSlots[Slot]->SetMapName(AuraGameMode->DefaultMapName);
 	
 	AuraGameMode->SaveSlotData(LoadSlots[Slot], Slot);
 	LoadSlots[Slot]->InitializeSlot();

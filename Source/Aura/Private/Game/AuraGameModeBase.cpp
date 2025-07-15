@@ -7,6 +7,13 @@
 #include "Kismet/GameplayStatics.h"
 #include "UI/ViewModel/VM_LoadSlot.h"
 
+void AAuraGameModeBase::BeginPlay()
+{
+	Super::BeginPlay();
+
+	Maps.Add(DefaultMapName, DefaultMap);
+}
+
 void AAuraGameModeBase::DeleteSlot(const UVM_LoadSlot* LoadSlot)
 {
 	if (UGameplayStatics::DoesSaveGameExist(LoadSlot->GetLoadSlotName(), LoadSlot->SlotIndex))
