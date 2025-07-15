@@ -22,6 +22,8 @@ public:
 	void SaveSlotData(const UVM_LoadSlot* LoadSlot, const int32 SlotIndex) const;
 	ULoadMenuSaveGame* GetSaveSlotData(const FString& SlotName, const int32 SlotIndex) const;
 
+	void TravelToMap(const UVM_LoadSlot* Slot);
+
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<USaveGame> LoadMenuSaveGameClass;
 

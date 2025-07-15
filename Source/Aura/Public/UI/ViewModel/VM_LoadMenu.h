@@ -28,6 +28,8 @@ public:
 	void LoadData();
 
 	UFUNCTION(BlueprintCallable)
+	void PlayButtonPressed();
+	UFUNCTION(BlueprintCallable)
 	void DeleteButtonPressed();
 	
 	UPROPERTY(EditDefaultsOnly)
