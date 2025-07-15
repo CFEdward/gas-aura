@@ -60,6 +60,7 @@ void UVM_LoadMenu::LoadData()
 		
 		LoadSlot.Value->SlotStatus = SaveObject->SaveSlotStatus;
 		LoadSlot.Value->SetPlayerName(FText::FromString(SaveObject->PlayerName));
+		LoadSlot.Value->SetMapName(SaveObject->MapName);
 		LoadSlot.Value->InitializeSlot();
 	}
 }
