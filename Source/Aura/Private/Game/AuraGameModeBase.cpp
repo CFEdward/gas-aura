@@ -7,12 +7,17 @@
 #include "Kismet/GameplayStatics.h"
 #include "UI/ViewModel/VM_LoadSlot.h"
 
+void AAuraGameModeBase::DeleteSlot(const UVM_LoadSlot* LoadSlot)
+{
+	if (UGameplayStatics::DoesSaveGameExist(LoadSlot->GetLoadSlotName(), LoadSlot->SlotIndex))
+	{
+		UGameplayStatics::DeleteGameInSlot(LoadSlot->GetLoadSlotName(), LoadSlot->SlotIndex);
+	}
+}
+
 void AAuraGameModeBase::SaveSlotData(const UVM_LoadSlot* LoadSlot, const int32 SlotIndex) const
 {
-	if (UGameplayStatics::DoesSaveGameExist(LoadSlot->GetLoadSlotName(), SlotIndex))
-	{
-		UGameplayStatics::DeleteGameInSlot(LoadSlot->GetLoadSlotName(), SlotIndex);
-	}
+	DeleteSlot(LoadSlot);
 	USaveGame* SaveGameObject = UGameplayStatics::CreateSaveGameObject(LoadMenuSaveGameClass);
 	ULoadMenuSaveGame* LoadMenuSaveGame = Cast<ULoadMenuSaveGame>(SaveGameObject);
 	LoadMenuSaveGame->PlayerName = LoadSlot->GetPlayerName().ToString();

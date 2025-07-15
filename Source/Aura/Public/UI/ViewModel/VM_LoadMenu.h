@@ -26,6 +26,9 @@ public:
 	void SelectSlotButtonPressed(const int32 Slot);
 
 	void LoadData();
+
+	UFUNCTION(BlueprintCallable)
+	void DeleteButtonPressed();
 	
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UVM_LoadSlot> LoadSlotVMClass;
@@ -51,6 +54,9 @@ private:
 	TObjectPtr<UVM_LoadSlot> LoadSlot_1;
 	UPROPERTY()
 	TObjectPtr<UVM_LoadSlot> LoadSlot_2;
+
+	UPROPERTY()
+	TObjectPtr<UVM_LoadSlot> SelectedSlot;
 
 	/** Field Notifies */
 	

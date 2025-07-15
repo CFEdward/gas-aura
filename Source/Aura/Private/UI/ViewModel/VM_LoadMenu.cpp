@@ -12,12 +12,15 @@ void UVM_LoadMenu::InitializeLoadSlots()
 {
 	LoadSlot_0 = NewObject<UVM_LoadSlot>(this, LoadSlotVMClass);
 	LoadSlot_0->SetLoadSlotName(FString("LoadSlot_0"));
+	LoadSlot_0->SlotIndex = 0;
 	LoadSlots.Add(0, LoadSlot_0);
 	LoadSlot_1 = NewObject<UVM_LoadSlot>(this, LoadSlotVMClass);
 	LoadSlot_1->SetLoadSlotName(FString("LoadSlot_1"));
+	LoadSlot_1->SlotIndex = 1;
 	LoadSlots.Add(1, LoadSlot_1);
 	LoadSlot_2 = NewObject<UVM_LoadSlot>(this, LoadSlotVMClass);
 	LoadSlot_2->SetLoadSlotName(FString("LoadSlot_2"));
+	LoadSlot_2->SlotIndex = 2;
 	LoadSlots.Add(2, LoadSlot_2);
 }
 
@@ -33,6 +36,7 @@ void UVM_LoadMenu::NewSlotButtonPressed(const int32 Slot)
 void UVM_LoadMenu::NewGameButtonPressed(const int32 Slot)
 {
 	LoadSlots[Slot]->SetWidgetSwitcherIndex.Broadcast(1);
+	LoadSlots[Slot]->SetPlayerName(FText());
 }
 
 void UVM_LoadMenu::SelectSlotButtonPressed(const int32 Slot)
@@ -41,7 +45,7 @@ void UVM_LoadMenu::SelectSlotButtonPressed(const int32 Slot)
 	{
 		LoadSlot.Value->SetSelectButtonIsEnabled(LoadSlot.Key != Slot);
 	}
-
+	SelectedSlot = LoadSlots[Slot];
 	SetPlayButtonIsEnabled(true);
 	SetDeleteButtonIsEnabled(true);
 }
@@ -56,6 +60,19 @@ void UVM_LoadMenu::LoadData()
 		LoadSlot.Value->SlotStatus = SaveObject->SaveSlotStatus;
 		LoadSlot.Value->SetPlayerName(FText::FromString(SaveObject->PlayerName));
 		LoadSlot.Value->InitializeSlot();
+	}
+}
+
+void UVM_LoadMenu::DeleteButtonPressed()
+{
+	if (IsValid(SelectedSlot))
+	{
+		AAuraGameModeBase::DeleteSlot(SelectedSlot);
+		SelectedSlot->SlotStatus = Vacant;
+		SelectedSlot->SetSelectButtonIsEnabled(true);
+		SetDeleteButtonIsEnabled(false);
+		SetPlayButtonIsEnabled(false);
+		SelectedSlot->InitializeSlot();
 	}
 }
 
