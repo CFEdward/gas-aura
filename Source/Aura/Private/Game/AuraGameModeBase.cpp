@@ -4,6 +4,7 @@
 #include "Game/AuraGameModeBase.h"
 
 #include "Game/LoadMenuSaveGame.h"
+#include "GameFramework/PlayerStart.h"
 #include "Kismet/GameplayStatics.h"
 #include "UI/ViewModel/VM_LoadSlot.h"
 
@@ -12,6 +13,29 @@ void AAuraGameModeBase::BeginPlay()
 	Super::BeginPlay();
 
 	Maps.Add(DefaultMapName, DefaultMap);
+}
+
+AActor* AAuraGameModeBase::ChoosePlayerStart_Implementation(AController* Player)
+{
+	TArray<AActor*> Actors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerStart::StaticClass(), Actors);
+	if (Actors.Num() > 0)
+	{
+		AActor* SelectedActor = Actors[0];
+		for (AActor* Actor : Actors)
+		{
+			APlayerStart* PlayerStart = Cast<APlayerStart>(Actor);
+			if (PlayerStart && PlayerStart->PlayerStartTag == FName("TheTag"))
+			{
+				SelectedActor = PlayerStart;
+				break;
+			}
+		}
+		
+		return SelectedActor;
+	}
+
+	return nullptr;
 }
 
 void AAuraGameModeBase::DeleteSlot(const UVM_LoadSlot* LoadSlot)
@@ -36,7 +60,7 @@ void AAuraGameModeBase::SaveSlotData(const UVM_LoadSlot* LoadSlot, const int32 S
 
 ULoadMenuSaveGame* AAuraGameModeBase::GetSaveSlotData(const FString& SlotName, const int32 SlotIndex) const
 {
-	USaveGame* SaveGameObject = nullptr;
+	USaveGame* SaveGameObject;
 	if (UGameplayStatics::DoesSaveGameExist(SlotName, SlotIndex))
 	{
 		SaveGameObject = UGameplayStatics::LoadGameFromSlot(SlotName, SlotIndex);
