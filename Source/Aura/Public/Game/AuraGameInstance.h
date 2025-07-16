@@ -16,6 +16,15 @@ class AURA_API UAuraGameInstance : public UGameInstance
 
 public:
 
+	UPROPERTY()
+	FName PlayerStartTag = FName();
+
+	UPROPERTY()
+	FString LoadSlotName = FString();
+
+	UPROPERTY()
+	int32 LoadSlotIndex = 0;
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Character Class Defaults")
 	TObjectPtr<UCharacterClassInfo> CharacterClassInfo;
 

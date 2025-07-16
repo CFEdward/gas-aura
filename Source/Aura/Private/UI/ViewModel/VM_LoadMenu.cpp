@@ -3,6 +3,7 @@
 
 #include "UI/ViewModel/VM_LoadMenu.h"
 
+#include "Game/AuraGameInstance.h"
 #include "Game/AuraGameModeBase.h"
 #include "Game/LoadMenuSaveGame.h"
 #include "Kismet/GameplayStatics.h"
@@ -32,6 +33,11 @@ void UVM_LoadMenu::NewSlotButtonPressed(const int32 Slot)
 	
 	AuraGameMode->SaveSlotData(LoadSlots[Slot], Slot);
 	LoadSlots[Slot]->InitializeSlot();
+
+	UAuraGameInstance* AuraGameInstance = Cast<UAuraGameInstance>(AuraGameMode->GetGameInstance());
+	AuraGameInstance->LoadSlotName = LoadSlots[Slot]->GetLoadSlotName();
+	AuraGameInstance->LoadSlotIndex = LoadSlots[Slot]->SlotIndex;
+	AuraGameInstance->PlayerStartTag = AuraGameMode->DefaultPlayerStartTag;
 }
 
 void UVM_LoadMenu::NewGameButtonPressed(const int32 Slot)

@@ -3,6 +3,7 @@
 
 #include "Game/AuraGameModeBase.h"
 
+#include "Game/AuraGameInstance.h"
 #include "Game/LoadMenuSaveGame.h"
 #include "GameFramework/PlayerStart.h"
 #include "Kismet/GameplayStatics.h"
@@ -17,6 +18,8 @@ void AAuraGameModeBase::BeginPlay()
 
 AActor* AAuraGameModeBase::ChoosePlayerStart_Implementation(AController* Player)
 {
+	UAuraGameInstance* AuraGameInstance = Cast<UAuraGameInstance>(GetGameInstance());
+	
 	TArray<AActor*> Actors;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerStart::StaticClass(), Actors);
 	if (Actors.Num() > 0)
@@ -25,7 +28,7 @@ AActor* AAuraGameModeBase::ChoosePlayerStart_Implementation(AController* Player)
 		for (AActor* Actor : Actors)
 		{
 			APlayerStart* PlayerStart = Cast<APlayerStart>(Actor);
-			if (PlayerStart && PlayerStart->PlayerStartTag == FName("TheTag"))
+			if (PlayerStart && PlayerStart->PlayerStartTag == AuraGameInstance->PlayerStartTag)
 			{
 				SelectedActor = PlayerStart;
 				break;
