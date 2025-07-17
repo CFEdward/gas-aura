@@ -45,9 +45,11 @@ public:
 
 	FOnPlayerStatChanged OnAttributePointsChangedDelegate;
 	void AddToAttributePoints(const int32 InAttributePoints);
+	void SetAttributePoints(const int32 InAttributePoints);
 	
 	FOnPlayerStatChanged OnSpellPointsChangedDelegate;
 	void AddToSpellPoints(const int32 InSpellPoints);
+	void SetSpellPoints(const int32 InSpellPoints);
 	
 protected:
 	

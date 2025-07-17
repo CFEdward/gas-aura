@@ -55,6 +55,8 @@ protected:
 
 	virtual void InitAbilityActorInfo() override;
 
+	void LoadProgress();
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<UNiagaraComponent> LevelUpNiagaraComponent;
 	
