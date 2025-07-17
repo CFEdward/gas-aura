@@ -34,11 +34,6 @@ void UVM_LoadMenu::NewSlotButtonPressed(const int32 Slot)
 	
 	AuraGameMode->SaveSlotData(LoadSlots[Slot], Slot);
 	LoadSlots[Slot]->InitializeSlot();
-
-	UAuraGameInstance* AuraGameInstance = Cast<UAuraGameInstance>(AuraGameMode->GetGameInstance());
-	AuraGameInstance->LoadSlotName = LoadSlots[Slot]->GetLoadSlotName();
-	AuraGameInstance->LoadSlotIndex = LoadSlots[Slot]->SlotIndex;
-	AuraGameInstance->PlayerStartTag = AuraGameMode->DefaultPlayerStartTag;
 }
 
 void UVM_LoadMenu::NewGameButtonPressed(const int32 Slot)
@@ -79,6 +74,9 @@ void UVM_LoadMenu::PlayButtonPressed()
 	AAuraGameModeBase* AuraGameMode = Cast<AAuraGameModeBase>(UGameplayStatics::GetGameMode(this));
 	UAuraGameInstance* AuraGameInstance = Cast<UAuraGameInstance>(AuraGameMode->GetGameInstance());
 	AuraGameInstance->PlayerStartTag = SelectedSlot->PlayerStartTag;
+	AuraGameInstance->LoadSlotName = SelectedSlot->GetLoadSlotName();
+	AuraGameInstance->LoadSlotIndex = SelectedSlot->SlotIndex;
+	
 	if (IsValid(SelectedSlot))
 	{
 		AuraGameMode->TravelToMap(LoadSlots[SelectedSlot->SlotIndex]);

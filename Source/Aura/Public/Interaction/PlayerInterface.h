@@ -13,14 +13,10 @@ class UPlayerInterface : public UInterface
 	GENERATED_BODY()
 };
 
-/**
- * 
- */
 class AURA_API IPlayerInterface
 {
 	GENERATED_BODY()
 
-	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
 
 	UFUNCTION(BlueprintNativeEvent)
@@ -47,4 +43,7 @@ public:
 	void ShowMagicCircle(UMaterialInterface* DecalMaterial = nullptr);
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void HideMagicCircle();
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void SaveProgress(const FName& CheckpointTag);
 };

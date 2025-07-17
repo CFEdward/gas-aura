@@ -26,6 +26,9 @@ public:
 
 	void TravelToMap(const UVM_LoadSlot* Slot);
 
+	ULoadMenuSaveGame* RetrieveInGameSaveData() const;
+	void SaveInGameProgressData(ULoadMenuSaveGame* SaveObject) const;
+
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<USaveGame> LoadMenuSaveGameClass;
 
