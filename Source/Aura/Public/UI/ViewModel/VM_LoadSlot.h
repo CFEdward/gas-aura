@@ -35,11 +35,13 @@ public:
 	
 	void SetLoadSlotName(const FString& InLoadSlotName) { UE_MVVM_SET_PROPERTY_VALUE(LoadSlotName, InLoadSlotName); }
 	void SetPlayerName(const FText& InPlayerName) { UE_MVVM_SET_PROPERTY_VALUE(PlayerName, InPlayerName); }
-	void SetSelectButtonIsEnabled(const bool& bInSelectButtonIsEnabled) { UE_MVVM_SET_PROPERTY_VALUE(bSelectButtonIsEnabled, bInSelectButtonIsEnabled); }
+	void SetPlayerLevel(const int32 InPlayerLevel) { UE_MVVM_SET_PROPERTY_VALUE(PlayerLevel, InPlayerLevel); }
+	void SetSelectButtonIsEnabled(const bool bInSelectButtonIsEnabled) { UE_MVVM_SET_PROPERTY_VALUE(bSelectButtonIsEnabled, bInSelectButtonIsEnabled); }
 	void SetMapName(const FString& InMapName) { UE_MVVM_SET_PROPERTY_VALUE(MapName, InMapName); }
 	
 	FString GetLoadSlotName() const { return LoadSlotName; }
 	FText GetPlayerName() const { return PlayerName; }
+	int32 GetPlayerLevel() const { return PlayerLevel; }
 	bool GetSelectButtonIsEnabled() const { return bSelectButtonIsEnabled; }
 	FString GetMapName() const { return MapName; }
 	
@@ -50,7 +52,8 @@ private:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, FieldNotify, Setter, Getter, meta = (AllowPrivateAccess = "true"))
 	FText PlayerName;
-
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, FieldNotify, Setter, Getter, meta = (AllowPrivateAccess = "true"))
+	int32 PlayerLevel;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, FieldNotify, Setter, Getter, meta = (AllowPrivateAccess = "true"))
 	FString MapName;
 
