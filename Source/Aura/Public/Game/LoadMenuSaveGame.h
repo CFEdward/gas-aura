@@ -18,6 +18,43 @@ enum ESaveSlotStatus : uint8
 };
 
 USTRUCT(BlueprintType)
+struct FSavedActor
+{
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY()
+	FName ActorName = NAME_None;
+
+	UPROPERTY()
+	FTransform Transform = FTransform();
+
+	/** Serialized variables from the Actor */
+	UPROPERTY()
+	TArray<uint8> Bytes;
+};
+
+inline bool operator==(const FSavedActor& Left, const FSavedActor& Right)
+{
+	return Left.ActorName == Right.ActorName;
+}
+
+USTRUCT(BlueprintType)
+struct FSavedMap
+{
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY()
+	FString MapAssetName = FString();
+
+	UPROPERTY()
+	TArray<FSavedActor> SavedActors;
+};
+
+USTRUCT(BlueprintType)
 struct FSavedAbility
 {
 	GENERATED_BODY()
@@ -51,6 +88,9 @@ class AURA_API ULoadMenuSaveGame : public USaveGame
 	GENERATED_BODY()
 
 public:
+
+	FSavedMap GetSavedMapWithMapName(const FString& InMapName);
+	bool HasMap(const FString& InMapName) const;
 	
 	UPROPERTY()
 	int32 SlotIndex = 0;
@@ -93,4 +133,7 @@ public:
 
 	UPROPERTY()
 	TArray<FSavedAbility> SavedAbilities;
+
+	UPROPERTY()
+	TArray<FSavedMap> SavedMaps;
 };
