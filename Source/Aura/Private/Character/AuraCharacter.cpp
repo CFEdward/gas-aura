@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright Eduard Ciofu
 
 
 #include "Character/AuraCharacter.h"
@@ -7,12 +7,12 @@
 #include "AuraGameplayTags.h"
 #include "NiagaraComponent.h"
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
+#include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "AbilitySystem/AuraAttributeSet.h"
 #include "AbilitySystem/Data/CharacterClassInfo.h"
 #include "AbilitySystem/Data/LevelUpInfo.h"
 #include "AbilitySystem/Debuff/DebuffNiagaraComponent.h"
 #include "Camera/CameraComponent.h"
-#include "Game/AuraGameInstance.h"
 #include "Game/AuraGameModeBase.h"
 #include "Game/LoadMenuSaveGame.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -68,9 +68,9 @@ void AAuraCharacter::InitAbilityActorInfo()
 		}
 	}
 
-	AuraPlayerState->OnLevelChangedDelegate.AddLambda([this](const int32 NewValue)
+	AuraPlayerState->OnLevelChangedDelegate.AddLambda([this](const int32 NewValue, const bool bLevelUp)
 		{
-			MulticastLevelUpParticles();
+			if (bLevelUp) MulticastLevelUpParticles();
 		}
 	);
 }
@@ -82,14 +82,7 @@ void AAuraCharacter::LoadProgress()
 	{
 		ULoadMenuSaveGame* SaveData = AuraGameMode->RetrieveInGameSaveData();
 		if (SaveData == nullptr) return;
-
-		if (AAuraPlayerState* AuraPlayerState = GetPlayerState<AAuraPlayerState>())
-		{
-			AuraPlayerState->SetLevel(SaveData->PlayerLevel);
-			AuraPlayerState->SetXP(SaveData->XP);
-			AuraPlayerState->SetAttributePoints(SaveData->AttributePoints);
-			AuraPlayerState->SetSpellPoints(SaveData->SpellPoints);
-		}
+		
 		if (SaveData->bFirstTimeLoadIn)
 		{
 			InitializeDefaultAttributes();
@@ -97,7 +90,17 @@ void AAuraCharacter::LoadProgress()
 		}
 		else
 		{
+			// TODO: Load in Abilities from disk
 			
+			if (AAuraPlayerState* AuraPlayerState = GetPlayerState<AAuraPlayerState>())
+			{
+				AuraPlayerState->SetLevel(SaveData->PlayerLevel);
+				AuraPlayerState->SetXP(SaveData->XP);
+				AuraPlayerState->SetAttributePoints(SaveData->AttributePoints);
+				AuraPlayerState->SetSpellPoints(SaveData->SpellPoints);
+			}
+			
+			UAuraAbilitySystemLibrary::InitializeDefaultAttributesFromSaveData(this, AbilitySystemComponent, SaveData);
 		}
 	}
 }
@@ -109,9 +112,6 @@ void AAuraCharacter::PossessedBy(AController* NewController)
 	// Init ability actor info for the Server
 	InitAbilityActorInfo();
 	LoadProgress();
-
-	// TODO: Load in Abilities from disk
-	AddCharacterAbilities();
 }
 
 void AAuraCharacter::OnRep_PlayerState()

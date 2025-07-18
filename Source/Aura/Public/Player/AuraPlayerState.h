@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright Eduard Ciofu
 
 #pragma once
 
@@ -13,10 +13,8 @@ class UAbilitySystemComponent;
 class UAttributeSet;
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnPlayerStatChanged, int32 /* StatValue */);
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnLevelChanged, int32 /* StatValue */, bool /* bLevelUp */);
 
-/**
- * 
- */
 UCLASS()
 class AURA_API AAuraPlayerState : public APlayerState, public IAbilitySystemInterface, public IModifierDependencyInterface
 {
@@ -39,7 +37,7 @@ public:
 	void AddToXP(const int32 InXP);
 	void SetXP(const int32 InXP);
 
-	FOnPlayerStatChanged OnLevelChangedDelegate;
+	FOnLevelChanged OnLevelChangedDelegate;
 	void AddToLevel(const int32 InLevel);
 	void SetLevel(const int32 InLevel);
 
@@ -68,7 +66,7 @@ private:
 	void OnRep_Level(int32 OldLevel);
 
 	UPROPERTY(VisibleAnywhere, ReplicatedUsing = OnRep_XP)
-	int32 XP = 1;
+	int32 XP = 0;
 	UFUNCTION()
 	void OnRep_XP(int32 OldXP);
 
