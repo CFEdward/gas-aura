@@ -3,8 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 #include "GameFramework/SaveGame.h"
 #include "LoadMenuSaveGame.generated.h"
+
+class UGameplayAbility;
 
 UENUM(BlueprintType)
 enum ESaveSlotStatus : uint8
@@ -12,6 +15,29 @@ enum ESaveSlotStatus : uint8
 	Vacant,
 	EnterName,
 	Taken
+};
+
+USTRUCT(BlueprintType)
+struct FSavedAbility
+{
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ClassDefaults")
+	TSubclassOf<UGameplayAbility> GameplayAbility;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "ClassDefaults")
+	FGameplayTag AbilityTag = FGameplayTag();
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "ClassDefaults")
+	FGameplayTag AbilityType = FGameplayTag();
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "ClassDefaults")
+	FGameplayTag AbilityStatus = FGameplayTag();
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "ClassDefaults")
+	FGameplayTag AbilitySlot = FGameplayTag();
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "ClassDefaults")
+	int32 AbilityLevel = 1;
 };
 
 UCLASS()
@@ -57,4 +83,9 @@ public:
 	float Resilience = 0;
 	UPROPERTY()
 	float Vigor = 0;
+
+	/** Abilities */
+
+	UPROPERTY()
+	TArray<FSavedAbility> SavedAbilities;
 };
