@@ -29,6 +29,8 @@ public:
 	ULoadMenuSaveGame* RetrieveInGameSaveData() const;
 	void SaveInGameProgressData(ULoadMenuSaveGame* SaveObject) const;
 
+	void SaveWorldState(UWorld* World) const;
+
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<USaveGame> LoadMenuSaveGameClass;
 
