@@ -40,6 +40,11 @@ public:
 	int32 AbilityLevel = 1;
 };
 
+inline bool operator==(const FSavedAbility& Left, const FSavedAbility& Right)
+{
+	return Left.AbilityTag.MatchesTagExact(Right.AbilityTag);
+}
+
 UCLASS()
 class AURA_API ULoadMenuSaveGame : public USaveGame
 {

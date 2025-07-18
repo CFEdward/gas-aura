@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
 #include "NiagaraComponent.h"
+#include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "PassiveNiagaraComponent.generated.h"
 
 
@@ -16,6 +17,7 @@ class AURA_API UPassiveNiagaraComponent : public UNiagaraComponent
 public:
 	
 	UPassiveNiagaraComponent();
+	void ActivateIfEquipped(UAuraAbilitySystemComponent* AuraASC);
 
 protected:
 	
