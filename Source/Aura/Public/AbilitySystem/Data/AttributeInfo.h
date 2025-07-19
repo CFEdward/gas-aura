@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright Eduard Ciofu
 
 #pragma once
 
@@ -25,9 +25,6 @@ struct FAuraAttributeInfo
 	float AttributeValue = 0.f;
 };
 
-/**
- * 
- */
 UCLASS()
 class AURA_API UAttributeInfo : public UDataAsset
 {

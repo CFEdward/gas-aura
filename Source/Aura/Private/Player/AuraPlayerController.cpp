@@ -21,7 +21,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Input/AuraInputComponent.h"
 #include "Interaction/CombatInterface.h"
-#include "Interaction/EnemyInterface.h"
+#include "Interaction/HighlightInterface.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "UI/Widget/DamageTextComponent.h"

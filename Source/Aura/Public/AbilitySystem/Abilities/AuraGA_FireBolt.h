@@ -6,9 +6,6 @@
 #include "AuraGA_CastProjectile.h"
 #include "AuraGA_FireBolt.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class AURA_API UAuraGA_FireBolt : public UAuraGA_CastProjectile
 {

@@ -1,4 +1,6 @@
-﻿#pragma once
+﻿// Copyright Eduard Ciofu
+
+#pragma once
 
 #include "CoreMinimal.h"
 

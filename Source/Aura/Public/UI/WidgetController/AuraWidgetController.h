@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright Eduard Ciofu
 
 #pragma once
 
@@ -37,9 +37,6 @@ struct FWidgetControllerParams
 	TObjectPtr<UAttributeSet> AttributeSet = nullptr;
 };
 
-/**
- * 
- */
 UCLASS(BlueprintType, Blueprintable)
 class AURA_API UAuraWidgetController : public UObject
 {

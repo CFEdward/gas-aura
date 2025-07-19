@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright Eduard Ciofu
 
 
 #include "UI/WidgetController/OverlayWidgetController.h"

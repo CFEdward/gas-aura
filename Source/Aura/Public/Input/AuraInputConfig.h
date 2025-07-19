@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright Eduard Ciofu
 
 #pragma once
 
@@ -21,9 +21,6 @@ struct FAuraInputAction
 	FGameplayTag InputTag = FGameplayTag();
 };
 
-/**
- * 
- */
 UCLASS()
 class AURA_API UAuraInputConfig : public UDataAsset
 {

@@ -7,6 +7,7 @@
 #include "GameFramework/PlayerController.h"
 #include "AuraPlayerController.generated.h"
 
+class IHighlightInterface;
 class AMagicCircle;
 class UNiagaraSystem;
 class UNavigationSystemV1;
@@ -20,7 +21,6 @@ class UAuraInputConfig;
 class UInputMappingContext;
 class UInputAction;
 struct FInputActionValue;
-class IEnemyInterface;
 
 USTRUCT(BlueprintType)
 struct FCameraOccludedActor
@@ -43,9 +43,6 @@ struct FCameraOccludedActor
 	bool bIsOccluded = false;
 };
 
-/**
- * 
- */
 UCLASS()
 class AURA_API AAuraPlayerController : public APlayerController
 {
@@ -134,8 +131,8 @@ private:
 
 	void CursorTrace();
 	FHitResult CursorHit;
-	TScriptInterface<IEnemyInterface> LastActor;
-	TScriptInterface<IEnemyInterface> ThisActor;
+	TScriptInterface<IHighlightInterface> LastActor;
+	TScriptInterface<IHighlightInterface> ThisActor;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	TObjectPtr<UAuraInputConfig> InputConfig;

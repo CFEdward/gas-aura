@@ -20,9 +20,6 @@ struct FSelectedAbility
 	FGameplayTag Status = FGameplayTag();
 };
 
-/**
- * 
- */
 UCLASS()
 class AURA_API USpellMenuWidgetController : public UAuraWidgetController
 {

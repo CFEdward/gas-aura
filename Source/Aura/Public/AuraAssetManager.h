@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright Eduard Ciofu
 
 #pragma once
 
@@ -6,9 +6,6 @@
 #include "Engine/AssetManager.h"
 #include "AuraAssetManager.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class AURA_API UAuraAssetManager : public UAssetManager
 {

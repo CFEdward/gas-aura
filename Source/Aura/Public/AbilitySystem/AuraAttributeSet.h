@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright Eduard Ciofu
 
 #pragma once
 
@@ -44,9 +44,6 @@ struct FEffectProperties
 template<class T>
 using TStaticFuncPtr = typename TBaseStaticDelegateInstance<T, FDefaultDelegateUserPolicy>::FFuncPtr;
 
-/**
- * 
- */
 UCLASS()
 class AURA_API UAuraAttributeSet : public UAttributeSet
 {

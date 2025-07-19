@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright Eduard Ciofu
 
 #pragma once
 
@@ -7,9 +7,6 @@
 #include "AuraInputConfig.h"
 #include "AuraInputComponent.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class AURA_API UAuraInputComponent : public UEnhancedInputComponent
 {

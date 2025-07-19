@@ -7,9 +7,7 @@
 #include "AuraGA_CastProjectile.generated.h"
 
 class AAuraProjectile;
-/**
- * 
- */
+
 UCLASS()
 class AURA_API UAuraGA_CastProjectile : public UAuraDamageGameplayAbility
 {

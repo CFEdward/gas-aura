@@ -53,9 +53,6 @@ struct FAuraAbilityInfo
 	TObjectPtr<const UMaterialInterface> BackgroundMaterial = nullptr;
 };
 
-/**
- * 
- */
 UCLASS()
 class AURA_API UAbilityInfo : public UDataAsset
 {

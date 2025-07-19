@@ -7,9 +7,7 @@
 #include "AuraAIController.generated.h"
 
 class UBehaviorTreeComponent;
-/**
- * 
- */
+
 UCLASS()
 class AURA_API AAuraAIController : public AAIController
 {

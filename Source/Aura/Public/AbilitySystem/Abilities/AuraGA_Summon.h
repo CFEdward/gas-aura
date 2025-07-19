@@ -6,9 +6,6 @@
 #include "AbilitySystem/Abilities/AuraGameplayAbility.h"
 #include "AuraGA_Summon.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class AURA_API UAuraGA_Summon : public UAuraGameplayAbility
 {

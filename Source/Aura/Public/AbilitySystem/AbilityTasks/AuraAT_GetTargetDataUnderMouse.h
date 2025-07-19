@@ -8,9 +8,6 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMouseTargetDataSignature, const FGameplayAbilityTargetDataHandle&, DataHandle);
 
-/**
- * 
- */
 UCLASS()
 class AURA_API UAuraAT_GetTargetDataUnderMouse : public UAbilityTask
 {

@@ -7,10 +7,8 @@
 
 /**
  * AuraGameplayTags
- *
  * Singleton containing native Gameplay Tags
  */
-
 struct FAuraGameplayTags
 {
 public:

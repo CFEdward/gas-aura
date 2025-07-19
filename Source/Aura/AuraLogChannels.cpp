@@ -1,3 +1,5 @@
-﻿#include "AuraLogChannels.h"
+﻿// Copyright Eduard Ciofu
+
+#include "AuraLogChannels.h"
 
 DEFINE_LOG_CATEGORY(LogAura);

@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright Eduard Ciofu
 
 #pragma once
 
@@ -10,9 +10,6 @@ class UAttributeInfo;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAttributeInfoSignature, const FAuraAttributeInfo&, Info);
 
-/**
- * 
- */
 UCLASS()
 class AURA_API UAttributeMenuWidgetController : public UAuraWidgetController
 {

@@ -21,9 +21,6 @@ struct FAuraLevelUpInfo
 	int32 SpellPointAward = 1;
 };
 
-/**
- * 
- */
 UCLASS()
 class AURA_API ULevelUpInfo : public UDataAsset
 {

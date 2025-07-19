@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright Eduard Ciofu
 
 #pragma once
 
@@ -23,9 +23,6 @@ struct AURA_API FAttributeCoefficient
 	TEnumAsByte<EGameplayModOp::Type> Operation = EGameplayModOp::Additive;
 };
 
-/**
- * 
- */
 UCLASS()
 class AURA_API UMMC_Base : public UGameplayModMagnitudeCalculation
 {
