@@ -18,6 +18,11 @@ public:
 
 	ACheckpoint(const FObjectInitializer& ObjectInitializer);
 
+	// Save Interface
+	virtual void LoadActor_Implementation() override;
+	virtual bool ShouldLoadTransform_Implementation() override { return false; }
+	// ~Save Interface
+	
 	UPROPERTY(SaveGame)
 	bool bReached = false;
 	
