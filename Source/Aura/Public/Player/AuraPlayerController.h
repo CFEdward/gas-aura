@@ -22,6 +22,13 @@ class UInputMappingContext;
 class UInputAction;
 struct FInputActionValue;
 
+enum class ETargetingStatus : uint8
+{
+	TargetingEnemy,
+	TargetingObject,
+	NotTargeting
+};
+
 USTRUCT(BlueprintType)
 struct FCameraOccludedActor
 {
@@ -131,8 +138,10 @@ private:
 
 	void CursorTrace();
 	FHitResult CursorHit;
-	TScriptInterface<IHighlightInterface> LastActor;
-	TScriptInterface<IHighlightInterface> ThisActor;
+	UPROPERTY()
+	TObjectPtr<AActor> LastActor;
+	UPROPERTY()
+	TObjectPtr<AActor> ThisActor;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	TObjectPtr<UAuraInputConfig> InputConfig;
@@ -142,7 +151,7 @@ private:
 	bool bAutoRunning;
 	UPROPERTY(EditDefaultsOnly)
 	float AutoRunAcceptanceRadius;
-	bool bTargeting;
+	ETargetingStatus TargetingStatus = ETargetingStatus::NotTargeting;
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<USplineComponent> Spline;
 

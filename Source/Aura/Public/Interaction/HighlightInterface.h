@@ -19,6 +19,8 @@ class AURA_API IHighlightInterface
 
 public:
 
-	virtual void HighlightActor() = 0;
-	virtual void UnHighlightActor() = 0;
+	UFUNCTION(BlueprintNativeEvent)
+	void HighlightActor();
+	UFUNCTION(BlueprintNativeEvent)
+	void UnHighlightActor();
 };

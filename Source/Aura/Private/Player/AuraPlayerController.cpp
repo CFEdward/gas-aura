@@ -21,6 +21,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Input/AuraInputComponent.h"
 #include "Interaction/CombatInterface.h"
+#include "Interaction/EnemyInterface.h"
 #include "Interaction/HighlightInterface.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
@@ -28,7 +29,7 @@
 
 AAuraPlayerController::AAuraPlayerController() :
 	bShiftKeyDown(false), FollowTime(0.f), ShortPressThreshold(0.5f), bAutoRunning(false),
-	AutoRunAcceptanceRadius(50.f), bTargeting(false)
+	AutoRunAcceptanceRadius(50.f)
 {
 	bReplicates = true;
 
@@ -175,7 +176,14 @@ void AAuraPlayerController::AbilityInputTagPressed(FGameplayTag InputTag)
 	if (InputTag.MatchesTagExact(FAuraGameplayTags::Get().InputTag_LMB))
 	{
 		ControlledPawnHalfHeight = Cast<ICombatInterface>(GetPawn())->GetHalfHeight();
-		bTargeting = ThisActor ? true : false;
+		if (IsValid(ThisActor))
+		{
+			TargetingStatus = ThisActor->Implements<UEnemyInterface>() ? ETargetingStatus::TargetingEnemy : ETargetingStatus::TargetingObject;
+		}
+		else
+		{
+			TargetingStatus = ETargetingStatus::NotTargeting;
+		}
 		bAutoRunning = false;
 	}
 	if (GetASC()) GetASC()->AbilityInputTagPressed(InputTag);
@@ -197,7 +205,7 @@ void AAuraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 
 	if (GetASC()) GetASC()->AbilityInputTagReleased(InputTag);
 	
-	if (!bIsWaiting && !bTargeting && !bShiftKeyDown && GetASC() && !GetASC()->HasMatchingGameplayTag(FAuraGameplayTags::Get().Player_Block_InputPressed))
+	if (!bIsWaiting && TargetingStatus != ETargetingStatus::TargetingEnemy && !bShiftKeyDown && GetASC() && !GetASC()->HasMatchingGameplayTag(FAuraGameplayTags::Get().Player_Block_InputPressed))
 	{
 		if (const APawn* ControlledPawn = GetPawn(); FollowTime <= ShortPressThreshold && ControlledPawn)
 		{
@@ -246,7 +254,7 @@ void AAuraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 		}
 		
 		FollowTime = 0.f;
-		bTargeting = false;
+		TargetingStatus = ETargetingStatus::NotTargeting;
 	}
 }
 
@@ -264,7 +272,7 @@ void AAuraPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
 		return;
 	}
 
-	if (bIsAction && !(bTargeting || bShiftKeyDown || bIsWaiting))
+	if (bIsAction && !(TargetingStatus == ETargetingStatus::TargetingEnemy || bShiftKeyDown || bIsWaiting))
 	{
 		FollowTime += GetWorld()->GetDeltaSeconds();
 
@@ -354,8 +362,8 @@ void AAuraPlayerController::CursorTrace()
 {
 	if (GetASC() && GetASC()->HasMatchingGameplayTag(FAuraGameplayTags::Get().Player_Block_CursorTrace))
 	{
-		if (LastActor) LastActor->UnHighlightActor();
-		if (ThisActor) ThisActor->UnHighlightActor();
+		if (LastActor) IHighlightInterface::Execute_HighlightActor(LastActor);
+		if (ThisActor) IHighlightInterface::Execute_UnHighlightActor(ThisActor);
 		LastActor = nullptr;
 		ThisActor = nullptr;
 		return;
@@ -366,12 +374,19 @@ void AAuraPlayerController::CursorTrace()
 	if (!CursorHit.bBlockingHit) return;
 
 	LastActor = ThisActor;
-	ThisActor = CursorHit.GetActor();
+	if (IsValid(CursorHit.GetActor()) && CursorHit.GetActor()->Implements<UHighlightInterface>())
+	{
+		ThisActor = CursorHit.GetActor();
+	}
+	else
+	{
+		ThisActor = nullptr;
+	}
 
 	if (LastActor != ThisActor)
 	{
-		if (LastActor) LastActor->UnHighlightActor();
-		if (ThisActor) ThisActor->HighlightActor();
+		if (LastActor) IHighlightInterface::Execute_UnHighlightActor(LastActor);
+		if (ThisActor) IHighlightInterface::Execute_HighlightActor(ThisActor);
 	}
 }
 
