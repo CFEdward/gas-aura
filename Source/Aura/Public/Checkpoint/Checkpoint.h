@@ -31,8 +31,11 @@ public:
 	virtual void UnHighlightActor_Implementation() override;
 	/** end Highlight Interface */
 	
-	UPROPERTY(SaveGame)
+	UPROPERTY(SaveGame, BlueprintReadWrite)
 	bool bReached = false;
+
+	UPROPERTY(EditAnywhere)
+	bool bBindOverlapCallback = true;
 	
 protected:
 
@@ -41,6 +44,7 @@ protected:
 	UFUNCTION(BlueprintImplementableEvent)
 	void CheckpointReached(UMaterialInstanceDynamic* DynamicMaterialInstance);
 
+	UFUNCTION(BlueprintCallable)
 	void HandleGlowEffects();
 
 	UFUNCTION()
@@ -52,10 +56,10 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<USceneComponent> MoveToComponent;
 	
-private:
-	
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<USphereComponent> Sphere;
+	
+private:
 
 	UPROPERTY(EditDefaultsOnly)
 	EStencilValue StencilValue = EStencilValue::Tan;

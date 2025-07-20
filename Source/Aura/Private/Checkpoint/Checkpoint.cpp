@@ -40,8 +40,11 @@ void ACheckpoint::BeginPlay()
 	Super::BeginPlay();
 
 	CheckpointMesh->SetCustomDepthStencilValue(UAuraAbilitySystemLibrary::GetStencilValueFromEnum(StencilValue));
-	
-	Sphere->OnComponentBeginOverlap.AddDynamic(this, &ThisClass::OnSphereOverlap);
+
+	if (bBindOverlapCallback)
+	{
+		Sphere->OnComponentBeginOverlap.AddDynamic(this, &ThisClass::OnSphereOverlap);
+	}
 }
 
 void ACheckpoint::LoadActor_Implementation()
