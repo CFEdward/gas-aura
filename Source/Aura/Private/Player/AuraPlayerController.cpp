@@ -16,6 +16,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/DecalComponent.h"
 #include "Components/SplineComponent.h"
+#include "Elements/Framework/TypedElementSorter.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/HUD.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -207,52 +208,82 @@ void AAuraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 	
 	if (!bIsWaiting && TargetingStatus != ETargetingStatus::TargetingEnemy && !bShiftKeyDown && GetASC() && !GetASC()->HasMatchingGameplayTag(FAuraGameplayTags::Get().Player_Block_InputPressed))
 	{
-		if (const APawn* ControlledPawn = GetPawn(); FollowTime <= ShortPressThreshold && ControlledPawn)
+		const APawn* ControlledPawn = GetPawn();
+		if (FollowTime <= ShortPressThreshold && ControlledPawn)
 		{
-			FHitResult NavChannelCursorHitResult;
-			GetHitResultUnderCursor(ECC_Navigation, false, NavChannelCursorHitResult);
-			if (NavChannelCursorHitResult.bBlockingHit)
+			// Set move-to location
+			// Targeted non-enemy's move-to location
+			bool bMoveToLocationSet = false;
+			bool bShouldShowClickVFX = false;
+			if (IsValid(ThisActor))
 			{
-				// Projecting a point from the cursor impact point to the NavMesh with a larger-than-default
-				// Query Extent, so there are better chances to reach for the NavMesh and return a point,
-				// then generating a path from the Pawn location to this point (only if found)
-				FNavLocation ImpactPointNavLocation;
-				// NOTE: Default Query Extent = FVector(50.f, 50.f, 250.f)
-				const FVector QueryingExtent = FVector(400.f, 400.f, 250.f);
-				const FNavAgentProperties& NavAgentProps = GetNavAgentPropertiesRef();
-				const bool bNavLocationFound = NavSystem->ProjectPointToNavigation(
-					NavChannelCursorHitResult.ImpactPoint,
-					ImpactPointNavLocation,
-					QueryingExtent,
-					&NavAgentProps
-				);
-				
-				if (bNavLocationFound)
+				IHighlightInterface* HighlightInterface = Cast<IHighlightInterface>(ThisActor);
+				if (HighlightInterface)
 				{
-					if (UNavigationPath* NavPath = UNavigationSystemV1::FindPathToLocationSynchronously(
-                    					this,
-                    					ControlledPawn->GetActorLocation(),
-                    					ImpactPointNavLocation
-                    ); NavPath && NavPath->PathPoints.Num() > 0)
-                    {
-                        Spline->ClearSplinePoints();
-                        for (const FVector& PointLoc : NavPath->PathPoints)
-                        {
-                            Spline->AddSplinePoint(PointLoc, ESplineCoordinateSpace::World);
-                        }
-						TargetSplinePointIdx = 1;
-                        bAutoRunning = true;
-						UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ClickNiagaraSystem, ImpactPointNavLocation);
-                    }
+					MoveToLocation = HighlightInterface->GetMoveToLocation();
+					bMoveToLocationSet = true;
 				}
-
-				if (bDebugNavEnabled)
+			}
+			// Clicked location
+			if (!bMoveToLocationSet)
+			{
+				FHitResult NavChannelCursorHitResult;
+				GetHitResultUnderCursor(ECC_Navigation, false, NavChannelCursorHitResult);
+				if (NavChannelCursorHitResult.bBlockingHit)
 				{
-					DrawDebugBox(GetWorld(), NavChannelCursorHitResult.ImpactPoint, QueryingExtent, FColor::Silver, false, 3.f);
+					// Projecting a point from the cursor impact point to the NavMesh with a larger-than-default
+					// Query Extent, so there are better chances to reach for the NavMesh and return a point,
+					// then generating a path from the Pawn location to this point (only if found)
+					
+					FNavLocation ImpactPointNavLocation;
+					// NOTE: Default Query Extent = FVector(50.f, 50.f, 250.f)
+					const FVector QueryingExtent = FVector(400.f, 400.f, 250.f);
+					const FNavAgentProperties& NavAgentProps = GetNavAgentPropertiesRef();
+					const bool bNavLocationFound = NavSystem->ProjectPointToNavigation(
+						NavChannelCursorHitResult.ImpactPoint,
+						ImpactPointNavLocation,
+						QueryingExtent,
+						&NavAgentProps
+					);
+					if (bNavLocationFound)
+					{
+						MoveToLocation = ImpactPointNavLocation;
+						bMoveToLocationSet = true;
+						bShouldShowClickVFX = true;
+					}
+					
+					if (bDebugNavEnabled)
+					{
+						DrawDebugBox(GetWorld(), NavChannelCursorHitResult.ImpactPoint, QueryingExtent, FColor::Silver, false, 3.f);
+					}
+				}
+			}
+
+			// Find path to move-to location and enable auto run
+			if (bMoveToLocationSet)
+			{
+				UNavigationPath* NavPath = UNavigationSystemV1::FindPathToLocationSynchronously(
+					this,
+					ControlledPawn->GetActorLocation(),
+					MoveToLocation
+				);
+				if (NavPath && NavPath->PathPoints.Num() > 0)
+				{
+					Spline->ClearSplinePoints();
+					for (const FVector& PointLoc : NavPath->PathPoints)
+					{
+						Spline->AddSplinePoint(PointLoc, ESplineCoordinateSpace::World);
+					}
+					TargetSplinePointIdx = 1;
+					bAutoRunning = true;
+
+					if (bShouldShowClickVFX && GetASC() && !GetASC()->HasMatchingGameplayTag(FAuraGameplayTags::Get().Player_Block_InputPressed))
+					{
+						UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ClickNiagaraSystem, MoveToLocation);
+					}
 				}
 			}
 		}
-		
 		FollowTime = 0.f;
 		TargetingStatus = ETargetingStatus::NotTargeting;
 	}

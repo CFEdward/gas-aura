@@ -7,7 +7,7 @@
 #include "SaveInterface.generated.h"
 
 // This class does not need to be modified.
-UINTERFACE()
+UINTERFACE(MinimalAPI)
 class USaveInterface : public UInterface
 {
 	GENERATED_BODY()

@@ -52,6 +52,9 @@ void AAuraEnemy::PossessedBy(AController* NewController)
 void AAuraEnemy::BeginPlay()
 {
 	Super::BeginPlay();
+
+	GetMesh()->SetCustomDepthStencilValue(CUSTOM_DEPTH_RED);
+	Weapon->SetCustomDepthStencilValue(CUSTOM_DEPTH_RED);
 	
 	InitAbilityActorInfo();
 	if (HasAuthority())
@@ -129,9 +132,7 @@ void AAuraEnemy::StunTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
 void AAuraEnemy::HighlightActor_Implementation()
 {
 	GetMesh()->SetRenderCustomDepth(true);
-	GetMesh()->SetCustomDepthStencilValue(CUSTOM_DEPTH_RED);
 	Weapon->SetRenderCustomDepth(true);
-	Weapon->SetCustomDepthStencilValue(CUSTOM_DEPTH_RED);
 }
 
 void AAuraEnemy::UnHighlightActor_Implementation()

@@ -154,6 +154,8 @@ private:
 	ETargetingStatus TargetingStatus = ETargetingStatus::NotTargeting;
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<USplineComponent> Spline;
+	UPROPERTY()
+	FVector MoveToLocation = FVector::ZeroVector;
 
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<UNiagaraSystem> ClickNiagaraSystem;

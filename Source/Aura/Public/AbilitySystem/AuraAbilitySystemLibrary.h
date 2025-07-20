@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
+#include "Aura/Aura.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "AuraAbilitySystemLibrary.generated.h"
 
@@ -159,6 +160,9 @@ public:
 	static float GetRadialDamageWithFalloffForTarget(UPARAM(ref) FVector& TargetLocation, const FGameplayEffectContextHandle& EffectContextHandle, const float BaseDamage, const FVector& Origin, const float DamageInnerRadius, const float DamageOuterRadius);
 
 	static int32 GetXPRewardForClassAndLevel(const UObject* WorldContextObject, ECharacterClass CharacterClass, int32 CharacterLevel);
+
+	UFUNCTION(BlueprintPure, Category = "AuraAbilitySystemLibrary|GameplayMechanics")
+	static int32 GetStencilValueFromEnum(const EStencilValue StencilValue) { return static_cast<int32>(StencilValue); }
 
 	/*
 	 * Damage Effect Params

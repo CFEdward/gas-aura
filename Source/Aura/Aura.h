@@ -8,6 +8,15 @@
 #define CUSTOM_DEPTH_BLUE 251
 #define CUSTOM_DEPTH_TAN 252
 
+UENUM(BlueprintType)
+enum class EStencilValue : uint8
+{
+	Default,
+	Red = CUSTOM_DEPTH_RED,
+	Blue = CUSTOM_DEPTH_BLUE,
+	Tan = CUSTOM_DEPTH_TAN
+};
+
 /* Object collision channels */
 #define ECC_Projectile ECollisionChannel::ECC_GameTraceChannel1
 

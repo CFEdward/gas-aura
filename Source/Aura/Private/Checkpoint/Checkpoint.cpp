@@ -3,6 +3,7 @@
 
 #include "Checkpoint/Checkpoint.h"
 
+#include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SphereComponent.h"
 #include "Game/AuraGameModeBase.h"
@@ -17,17 +18,30 @@ ACheckpoint::ACheckpoint(const FObjectInitializer& ObjectInitializer) : Super(Ob
 	CheckpointMesh = CreateDefaultSubobject<UStaticMeshComponent>("CheckpointMesh");
 	CheckpointMesh->SetupAttachment(GetRootComponent());
 	CheckpointMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	CheckpointMesh->SetCollisionResponseToAllChannels(ECR_Block);
+	CheckpointMesh->bUseDefaultCollision = true;
 	
 	Sphere = CreateDefaultSubobject<USphereComponent>("Sphere");
 	Sphere->SetupAttachment(CheckpointMesh);
 	Sphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	Sphere->SetCollisionResponseToAllChannels(ECR_Ignore);
 	Sphere->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
+	Sphere->SetCanEverAffectNavigation(false);
 
 	const float CapsuleHalfHeight = GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight();
 	CheckpointMesh->SetRelativeLocation(FVector(350.f, 0.f, -CapsuleHalfHeight));
 	Sphere->SetSphereRadius(350.f);
+
+	MoveToComponent = CreateDefaultSubobject<USceneComponent>("MoveToComponent");
+	MoveToComponent->SetupAttachment(GetRootComponent());
+}
+
+void ACheckpoint::BeginPlay()
+{
+	Super::BeginPlay();
+
+	CheckpointMesh->SetCustomDepthStencilValue(UAuraAbilitySystemLibrary::GetStencilValueFromEnum(StencilValue));
+	
+	Sphere->OnComponentBeginOverlap.AddDynamic(this, &ThisClass::OnSphereOverlap);
 }
 
 void ACheckpoint::LoadActor_Implementation()
@@ -39,11 +53,14 @@ void ACheckpoint::LoadActor_Implementation()
 	}
 }
 
-void ACheckpoint::BeginPlay()
+void ACheckpoint::HighlightActor_Implementation()
 {
-	Super::BeginPlay();
+	CheckpointMesh->SetRenderCustomDepth(true);
+}
 
-	Sphere->OnComponentBeginOverlap.AddDynamic(this, &ThisClass::OnSphereOverlap);
+void ACheckpoint::UnHighlightActor_Implementation()
+{
+	CheckpointMesh->SetRenderCustomDepth(false);
 }
 
 void ACheckpoint::HandleGlowEffects()
