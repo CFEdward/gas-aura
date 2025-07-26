@@ -28,6 +28,12 @@ void UVM_LoadMenu::InitializeLoadSlots()
 void UVM_LoadMenu::NewSlotButtonPressed(const int32 Slot)
 {
 	const AAuraGameModeBase* AuraGameMode = Cast<AAuraGameModeBase>(UGameplayStatics::GetGameMode(this));
+	if (!IsValid(AuraGameMode))
+	{
+		GEngine->AddOnScreenDebugMessage(1, 15.f, FColor::Magenta, FString(TEXT("Please switch to Single Player")));
+		return;
+	}
+	
 	LoadSlots[Slot]->SlotStatus = Taken;
 	LoadSlots[Slot]->SetMapName(AuraGameMode->DefaultMapName);
 	LoadSlots[Slot]->SetPlayerLevel(1);
@@ -57,6 +63,8 @@ void UVM_LoadMenu::SelectSlotButtonPressed(const int32 Slot)
 void UVM_LoadMenu::LoadData()
 {
 	const AAuraGameModeBase* AuraGameMode = Cast<AAuraGameModeBase>(UGameplayStatics::GetGameMode(this));
+	if (!IsValid(AuraGameMode)) return;
+	
 	for (const TTuple<int32, UVM_LoadSlot*> LoadSlot : LoadSlots)
 	{
 		const ULoadMenuSaveGame* SaveObject = AuraGameMode->GetSaveSlotData(LoadSlot.Value->GetLoadSlotName(), LoadSlot.Key);
