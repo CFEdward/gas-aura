@@ -7,6 +7,7 @@
 #include "GameFramework/Actor.h"
 #include "AuraEffectActor.generated.h"
 
+class URotatingMovementComponent;
 class UAbilitySystemComponent;
 class UGameplayEffect;
 
@@ -33,6 +34,8 @@ class AURA_API AAuraEffectActor : public AActor
 public:	
 	
 	AAuraEffectActor();
+
+	virtual void Tick(float DeltaTime) override;
 	
 protected:
 	
@@ -50,29 +53,56 @@ protected:
 	//bool bDestroyOnEffectApplication;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Applied Effects")
-	bool bApplyEffectsToEnemies;
+	bool bApplyEffectsToEnemies = false;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Applied Effects")
 	TSubclassOf<UGameplayEffect> InstantGameplayEffectClass;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Applied Effects")
-	TEnumAsByte<EEffectApplicationPolicy> InstantEffectApplicationPolicy;
+	TEnumAsByte<EEffectApplicationPolicy> InstantEffectApplicationPolicy = EEffectApplicationPolicy::DoNotApply;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Applied Effects")
 	TSubclassOf<UGameplayEffect> DurationGameplayEffectClass;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Applied Effects")
-	TEnumAsByte<EEffectApplicationPolicy> DurationEffectApplicationPolicy;
+	TEnumAsByte<EEffectApplicationPolicy> DurationEffectApplicationPolicy = EEffectApplicationPolicy::DoNotApply;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Applied Effects")
 	TSubclassOf<UGameplayEffect> InfiniteGameplayEffectClass;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Applied Effects")
-	TEnumAsByte<EEffectApplicationPolicy> InfiniteEffectApplicationPolicy;
+	TEnumAsByte<EEffectApplicationPolicy> InfiniteEffectApplicationPolicy = EEffectApplicationPolicy::DoNotApply;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Applied Effects")
-	TEnumAsByte<EEffectRemovalPolicy> InfiniteEffectRemovalPolicy;
+	TEnumAsByte<EEffectRemovalPolicy> InfiniteEffectRemovalPolicy = EEffectRemovalPolicy::DoNotRemove;
 
 	UPROPERTY()
 	TMap<FActiveGameplayEffectHandle, UAbilitySystemComponent*> ActiveEffectHandles;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Applied Effects")
-	float ActorLevel;
+	float ActorLevel = 1.f;
 
+private:
+
+	UFUNCTION(BlueprintCallable)
+	void StartSinusoidalMovement();
+	void ItemMovement(float DeltaTime);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	FVector InitialLocation;
+
+	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	FVector CalculatedLocation;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	float SineAmplitude = 1.f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	float SinePeriodConstant = 1.f;
+
+	float RunningTime = 0.f;
+	
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<URotatingMovementComponent> RotatingMoveComp;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	bool bRotates = true;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	bool bSinusoidalMovement = false;
 };

@@ -5,27 +5,31 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
+#include "GameFramework/RotatingMovementComponent.h"
 
-
-// Sets default values
-AAuraEffectActor::AAuraEffectActor() :
-	//bDestroyOnEffectApplication(false),
-	bApplyEffectsToEnemies(false),
-	InstantEffectApplicationPolicy(EEffectApplicationPolicy::DoNotApply),
-	DurationEffectApplicationPolicy(EEffectApplicationPolicy::DoNotApply),
-	InfiniteEffectApplicationPolicy(EEffectApplicationPolicy::DoNotApply),
-	InfiniteEffectRemovalPolicy(EEffectRemovalPolicy::DoNotRemove),
-	ActorLevel(1.f)
+AAuraEffectActor::AAuraEffectActor()
 {
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 
 	SetRootComponent(CreateDefaultSubobject<USceneComponent>("SceneRoot"));
+	RotatingMoveComp = CreateDefaultSubobject<URotatingMovementComponent>(TEXT("Rotating Movement Component"));
+}
+
+void AAuraEffectActor::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	RunningTime += DeltaTime;
+	if (RunningTime > UE_TWO_PI / SinePeriodConstant) RunningTime = 0.f;
+	ItemMovement(DeltaTime);
 }
 
 void AAuraEffectActor::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	InitialLocation = GetActorLocation();
+	CalculatedLocation = InitialLocation;
 }
 
 void AAuraEffectActor::ApplyEffectToTarget(AActor* TargetActor, const TSubclassOf<UGameplayEffect> GameplayEffectClass)
@@ -105,5 +109,21 @@ void AAuraEffectActor::OnEndOverlap(AActor* TargetActor)
 		{
 			ActiveEffectHandles.FindAndRemoveChecked(Handle);
 		}
+	}
+}
+
+void AAuraEffectActor::StartSinusoidalMovement()
+{
+	bSinusoidalMovement = true;
+	InitialLocation = GetActorLocation();
+	CalculatedLocation = InitialLocation;
+}
+
+void AAuraEffectActor::ItemMovement(const float DeltaTime)
+{
+	if (bSinusoidalMovement)
+	{
+		const float Sine = SineAmplitude * FMath::Sin(RunningTime * SinePeriodConstant);
+		CalculatedLocation = InitialLocation + FVector(0.f, 0.f, Sine);
 	}
 }
