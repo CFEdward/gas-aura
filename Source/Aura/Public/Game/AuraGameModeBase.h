@@ -32,6 +32,8 @@ public:
 	void SaveWorldState(UWorld* World, const FString& DestinationMapAssetName = FString()) const;
 	void LoadWorldState(UWorld* World) const;
 
+	void PlayerDied(const ACharacter* DeadCharacter) const;
+
 	FString GetMapNameFromMapAssetName(const FString& MapAssetName) const;
 
 	UPROPERTY(EditDefaultsOnly)

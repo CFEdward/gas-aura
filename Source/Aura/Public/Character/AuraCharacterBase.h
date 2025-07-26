@@ -98,7 +98,8 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
 	float BaseWalkSpeed = 600.f;
-	
+
+	UPROPERTY(BlueprintReadOnly)
 	bool bDead;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
