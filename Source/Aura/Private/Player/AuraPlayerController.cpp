@@ -10,6 +10,7 @@
 #include "NavigationSystem.h"
 #include "NiagaraFunctionLibrary.h"
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
+#include "Actor/AuraEnemySpawnVolume.h"
 #include "Actor/MagicCircle.h"
 #include "Aura/Aura.h"
 #include "Camera/CameraComponent.h"
@@ -441,6 +442,7 @@ void AAuraPlayerController::SyncOccludedActors()
 
 	TArray<AActor*> ActorsToIgnore;	// TODO: Add configuration to ignore actor types
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AVolume::StaticClass(), ActorsToIgnore);
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AAuraEnemySpawnVolume::StaticClass(), ActorsToIgnore);
 	
 	TArray<FHitResult> OutHits;
 

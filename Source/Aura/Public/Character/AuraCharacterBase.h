@@ -9,6 +9,10 @@
 #include "Interaction/CombatInterface.h"
 #include "AuraCharacterBase.generated.h"
 
+#define CHARACTER_DATA_ACCESSOR(DataType, PropertyName)														\
+	FORCEINLINE DataType Get##PropertyName() const { return PropertyName; }							\
+	void Set##PropertyName(const DataType& In##PropertyName) { PropertyName = In##PropertyName; }
+
 class UPassiveNiagaraComponent;
 class UDebuffNiagaraComponent;
 class UNiagaraSystem;
@@ -76,6 +80,8 @@ public:
 
 	UPROPERTY(Replicated, BlueprintReadOnly, Category = "Combat")
 	bool bIsBeingShocked = false;
+
+	CHARACTER_DATA_ACCESSOR(ECharacterClass, CharacterClass)
 
 protected:
 	

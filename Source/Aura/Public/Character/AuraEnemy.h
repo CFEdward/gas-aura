@@ -9,6 +9,10 @@
 #include "UI/WidgetController/OverlayWidgetController.h"
 #include "AuraEnemy.generated.h"
 
+#define ENEMY_DATA_ACCESSOR(DataType, PropertyName)														\
+	FORCEINLINE DataType Get##PropertyName() const { return PropertyName; }								\
+	void Set##PropertyName(const DataType& In##PropertyName) { PropertyName = In##PropertyName; }
+
 class AAuraAIController;
 class UBehaviorTree;
 class UWidgetComponent;
@@ -55,6 +59,8 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, Category = "Combat")
 	TObjectPtr<AActor> CombatTarget;
+
+	ENEMY_DATA_ACCESSOR(int32, Level);
 
 protected:
 	
