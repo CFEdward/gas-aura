@@ -27,7 +27,7 @@ AAuraCharacter::AAuraCharacter()
 {
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>("CameraBoom");
 	CameraBoom->SetupAttachment(GetRootComponent());
-	CameraBoom->SetUsingAbsoluteRotation(true);
+	CameraBoom->SetUsingAbsoluteRotation(false);
 	CameraBoom->bDoCollisionTest = false;
 
 	TopdownCameraComponent = CreateDefaultSubobject<UCameraComponent>("TopdownCameraComponent");

@@ -335,7 +335,6 @@ void AAuraPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
 	{
 		if (GetASC()) GetASC()->AbilityInputTagHeld(InputTag);
 	}
-	//if (bTargeting || bShiftKeyDown)
 }
 
 void AAuraPlayerController::Move(const FInputActionValue& InputActionValue)
@@ -352,8 +351,8 @@ void AAuraPlayerController::Move(const FInputActionValue& InputActionValue)
 	if (APawn* ControlledPawn = GetPawn<APawn>())
 	{
 		bAutoRunning = false;
-		ControlledPawn->AddMovementInput(ForwardDirection, InputAxisVector.Y);
-		ControlledPawn->AddMovementInput(RightDirection, InputAxisVector.X);
+		ControlledPawn->AddMovementInput(FVector::RightVector, -InputAxisVector.Y);
+		ControlledPawn->AddMovementInput(FVector::ForwardVector, InputAxisVector.X);
 	}
 }
 
@@ -441,8 +440,11 @@ void AAuraPlayerController::SyncOccludedActors()
 	CollisionObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_WorldStatic));
 
 	TArray<AActor*> ActorsToIgnore;	// TODO: Add configuration to ignore actor types
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AVolume::StaticClass(), ActorsToIgnore);
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AAuraEnemySpawnVolume::StaticClass(), ActorsToIgnore);
+	TArray<AActor*> TempActorsToIgnore;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AVolume::StaticClass(), TempActorsToIgnore);
+	ActorsToIgnore.Append(TempActorsToIgnore);
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AAuraEnemySpawnVolume::StaticClass(), TempActorsToIgnore);
+	ActorsToIgnore.Append(TempActorsToIgnore);
 	
 	TArray<FHitResult> OutHits;
 
