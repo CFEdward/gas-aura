@@ -3,6 +3,7 @@
 
 # Rider
 .idea/
+*.mcp.json
 
 # Compiled Object files
 *.slo
